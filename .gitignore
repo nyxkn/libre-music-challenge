@@ -181,6 +181,7 @@ pyrightconfig.json
 data/
 secret/
 tmp/
+*.tmp
 
 # httpie test session
 session.json
