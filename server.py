@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for, make_response
 import flask_login
 from internetarchive import get_item
 from tinydb import TinyDB, Query, table, operations
@@ -21,7 +21,10 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 # Our mock database.
-users = {'arst': {'password': 'qwfp'}}
+users = {
+    'arst': {'password': 'qwfp'},
+    'qwfp': {'password': 'qwfp'}
+}
 
 
 def main():
@@ -49,6 +52,7 @@ def user_loader(username):
 @login_manager.request_loader
 def request_loader(request):
     username = request.form.get('username')
+
     if username not in users:
         return
 
@@ -60,37 +64,48 @@ def request_loader(request):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return '''
-               <form action='login' method='POST'>
-                <input type='text' name='username' id='username' placeholder='username'/>
-                <input type='password' name='password' id='password' placeholder='password'/>
-                <input type='submit' name='submit'/>
-               </form>
-               '''
+        return render_template("login.html")
 
     # requires POST to be in form format (-f in httpie)
     if "username" in request.form:
         username = request.form['username']
+
+        # TODO: remove
+        allow_any_user = True
+        if allow_any_user:
+            if not username in users:
+                users[username] = { 'password': request.form['password'] }
+
+
+        auth_success = False
         if username in users and request.form['password'] == users[username]['password']:
+            auth_success = True
+
+        if auth_success:
             user = User()
             user.id = username
             flask_login.login_user(user)
-            return 'Success'
-            # return redirect(url_for('protected'))
+            print("redirect")
+            return redirect(url_for('home'))
 
     return 'Bad login'
 
 
-@app.route('/login-status')
+@app.route('/login-status', methods=["GET"])
 @flask_login.login_required
 def protected():
     return 'Logged in as: ' + flask_login.current_user.id
 
 
-@app.route('/logout')
+@app.route('/logout', methods=["GET", "POST"])
 def logout():
     flask_login.logout_user()
-    return 'Logged out'
+
+    response = make_response('Logged out')
+    response.headers['HX-Redirect'] = '/'
+    return response
+
+    # return 'Logged out'
 
 
 @login_manager.unauthorized_handler
@@ -252,8 +267,12 @@ def get_user_votes(event_id: int):
 
 
 @app.route("/")
-def homepage():
-    return render_template("index.html", event_id=get_current_event(), locked=is_voting_locked())
+def home():
+    print(flask_login.current_user.is_authenticated)
+    if flask_login.current_user.is_authenticated:
+        return render_template("index.html", event_id=get_current_event(), locked=is_voting_locked(), user=get_current_user())
+    else:
+        return render_template("login.html")
 
 
 

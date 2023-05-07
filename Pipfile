@@ -9,6 +9,7 @@ internetarchive = "*"
 tinydb = "*"
 flask-login = "*"
 flask-assets = "*"
+gunicorn = "*"
 
 [dev-packages]
 

@@ -4,8 +4,12 @@
 
 <!-- <div class="mx-auto max-w-screen"> -->
 <div class="">
-<h1 class="text-4xl my-16">Libre Music Challenge {{event_id}}</h1>
+<h1 class="text-4xl mb-16">Libre Music Challenge {{event_id}}</h1>
 
+<h2 class="mb-16">Logged in as: {{user}}</h2>
+
+<!-- <button hx-post="/logout" hx-redirect="/">Logout</button> -->
+<button class="btn mb-16" hx-post="/logout">Logout</button>
 
 {% if event_id > 0 %}
     <iframe

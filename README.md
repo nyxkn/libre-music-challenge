@@ -4,8 +4,7 @@
 
 ``` sh
 pipenv install
-pipenv shell
-python server.py
+pipenv run flask --app server run
 ```
 
 ## Development setup
