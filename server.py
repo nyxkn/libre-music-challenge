@@ -2,6 +2,7 @@
 
 from flask import Flask, request, render_template, redirect, url_for, make_response
 import flask_login
+from werkzeug.security import generate_password_hash, check_password_hash
 from internetarchive import get_item
 from tinydb import TinyDB, Query, table, operations
 # from flask_assets import Bundle, Environment
@@ -21,13 +22,6 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 
-# mock database
-# app.config['users'] = {
-#     'arst': {'password': 'qwfp'},
-#     'qwfp': {'password': 'qwfp'}
-# }
-
-
 def main():
     app.run(debug=True)
 
@@ -45,23 +39,19 @@ def user_exists(username):
     query_data = db.search(Query().username == username)
 
     if len(query_data) == 1:
-    # if username in app.config['users']:
         return True
     return False
 
 def create_user(username, password):
     db = TinyDB("data/users.json")
-    db.insert({'username': username, 'password': password})
-    # app.config['users'][username] = { 'password': password }
+    db.insert({'username': username, 'password': generate_password_hash(password)})
 
 
 def check_user_auth(username, password):
     db = TinyDB("data/users.json")
-    query = Query()
-    query_data = db.search((query.username == username) & (query.password == password))
+    query_data = db.search(Query().username == username)
 
-    # if username in app.config['users'] and password == app.config['users'][username]['password']:
-    if len(query_data) == 1:
+    if len(query_data) == 1 and check_password_hash(query_data[0]['password'], password):
         return True
     return False
 
