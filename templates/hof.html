@@ -10,7 +10,7 @@
         {% for event in events %}
 
         <li class="my-16">
-            <h4 class="text-lg font-bold my-4">LMC #{{event.event}}</h4>
+            <h4 class="text-lg font-bold my-4">LMC #{{event.event}} - {{event.title}}</h4>
             <p>Winner: <span class="font-bold italic">{{event.winner}}</span></p>
             <p>
                 <a class="link mr-2" href="{{event.link}}">Thread</a>

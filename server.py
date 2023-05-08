@@ -311,7 +311,6 @@ def hall_of_fame():
 
     for event in events:
         event['winner'] = event['winner'].replace("\n", ", ")
-
         # event['archive'] = event['archive'].replace("---", "")
 
     events.reverse()
