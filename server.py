@@ -309,8 +309,10 @@ def hall_of_fame():
         for row in reader:
             events.append(row)
 
-    for e in events:
-        e['winner'] = e['winner'].replace("\n", ", ")
+    for event in events:
+        event['winner'] = event['winner'].replace("\n", ", ")
+
+        # event['archive'] = event['archive'].replace("---", "")
 
     events.reverse()
     return render_template("hof.html", events=events)
