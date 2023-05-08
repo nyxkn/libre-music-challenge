@@ -7,6 +7,7 @@ from internetarchive import get_item
 from tinydb import TinyDB, Query, table, operations
 # from flask_assets import Bundle, Environment
 from pprint import pprint
+import csv
 
 
 app = Flask(__name__)
@@ -24,6 +25,7 @@ login_manager.init_app(app)
 
 def main():
     app.run(debug=True)
+
 
 
 # ================================================================================
@@ -297,6 +299,22 @@ def load_current_entries():
         return render_template(
             "entries.html",
             event_id=current_event, entries=get_entries(current_event), votes=votes, locked=is_voting_locked())
+
+
+@app.route('/hall-of-fame', methods=["GET"])
+def hall_of_fame():
+    events = []
+    with open('data/lmc.csv', 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            events.append(row)
+
+    for e in events:
+        e['winner'] = e['winner'].replace("\n", ", ")
+
+    events.reverse()
+    return render_template("hof.html", events=events)
+
 
 
 if __name__ == "__main__":
