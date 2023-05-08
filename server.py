@@ -20,11 +20,12 @@ with open("secret/secret_key", "r") as file:
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
-# Our mock database.
-users = {
-    'arst': {'password': 'qwfp'},
-    'qwfp': {'password': 'qwfp'}
-}
+
+# mock database
+# app.config['users'] = {
+#     'arst': {'password': 'qwfp'},
+#     'qwfp': {'password': 'qwfp'}
+# }
 
 
 def main():
@@ -38,10 +39,36 @@ def main():
 class User(flask_login.UserMixin):
     pass
 
+def user_exists(username):
+    db = TinyDB("data/users.json")
+    # db.update(set_vote(artist, vote), Query().user == user)
+    query_data = db.search(Query().username == username)
+
+    if len(query_data) == 1:
+    # if username in app.config['users']:
+        return True
+    return False
+
+def create_user(username, password):
+    db = TinyDB("data/users.json")
+    db.insert({'username': username, 'password': password})
+    # app.config['users'][username] = { 'password': password }
+
+
+def check_user_auth(username, password):
+    db = TinyDB("data/users.json")
+    query = Query()
+    query_data = db.search((query.username == username) & (query.password == password))
+
+    # if username in app.config['users'] and password == app.config['users'][username]['password']:
+    if len(query_data) == 1:
+        return True
+    return False
+
 
 @login_manager.user_loader
 def user_loader(username):
-    if username not in users:
+    if not user_exists(username):
         return
 
     user = User()
@@ -53,7 +80,7 @@ def user_loader(username):
 def request_loader(request):
     username = request.form.get('username')
 
-    if username not in users:
+    if not user_exists(username):
         return
 
     user = User()
@@ -69,23 +96,18 @@ def login():
     # requires POST to be in form format (-f in httpie)
     if "username" in request.form:
         username = request.form['username']
+        password = request.form['password']
 
         # TODO: remove
         allow_any_user = True
         if allow_any_user:
-            if not username in users:
-                users[username] = { 'password': request.form['password'] }
+            if username and not user_exists(username):
+                create_user(username, password)
 
-
-        auth_success = False
-        if username in users and request.form['password'] == users[username]['password']:
-            auth_success = True
-
-        if auth_success:
+        if check_user_auth(username, password):
             user = User()
             user.id = username
             flask_login.login_user(user)
-            print("redirect")
             return redirect(url_for('home'))
 
     return 'Bad login'
@@ -205,9 +227,7 @@ def save_vote():
 
     def set_vote(artist, new_vote):
         def transform(doc):
-            # print(doc)
             doc['votes'][artist] = new_vote
-            # return entry
         return transform
 
     db.update(set_vote(artist, vote), Query().user == user)
@@ -252,10 +272,10 @@ def get_user_votes(event_id: int):
     votes = {}
     if len(db_data) > 0:
         votes = db_data[0]["votes"]
-    else:
-        print("initializing db entry for ", get_current_event(), event_id)
-        # this initializes the db entry (with empty votes)
-        save_votes()
+    # else:
+    #     print("initializing db entry for ", get_current_user(), event_id)
+    #     # this initializes the db entry (with empty votes)
+    #     save_votes()
 
     return votes
 
@@ -268,7 +288,6 @@ def get_user_votes(event_id: int):
 
 @app.route("/")
 def home():
-    print(flask_login.current_user.is_authenticated)
     if flask_login.current_user.is_authenticated:
         return render_template("index.html", event_id=get_current_event(), locked=is_voting_locked(), user=get_current_user())
     else:
@@ -285,7 +304,6 @@ def load_current_entries():
 
     else:
         votes = get_user_votes(current_event)
-        print(votes)
         return render_template(
             "entries.html",
             event_id=current_event, entries=get_entries(current_event), votes=votes, locked=is_voting_locked())
