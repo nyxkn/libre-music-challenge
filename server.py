@@ -110,7 +110,7 @@ def login():
             user = User()
             user.id = username
             flask_login.login_user(user)
-            return redirect(url_for('home'))
+            return redirect(url_for('vote'))
 
     return 'Bad login'
 
@@ -348,7 +348,10 @@ def rss():
     # Generate the XML for the feed
     rss_feed = feed.writeString('utf-8')
 
-    return rss_feed
+    response = make_response(rss_feed)
+    # response.headers['Content-Type'] = 'application/rss+xml'
+    # response.headers['Content-Disposition'] = 'attachment; filename=rss.xml'
+    return response
 
 
 @app.route("/rules")
