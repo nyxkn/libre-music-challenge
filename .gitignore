@@ -189,3 +189,7 @@ session.json
 
 # npm install
 node_modules/
+
+# libreoffice temp files
+*.~lock*
+

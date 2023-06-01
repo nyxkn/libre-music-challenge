@@ -292,7 +292,7 @@ def home():
 @app.route("/vote")
 def vote():
     if flask_login.current_user.is_authenticated:
-        return render_template("index.html", event_id=get_current_event(), locked=is_voting_locked(), user=get_current_user())
+        return render_template("vote.html", event_id=get_current_event(), locked=is_voting_locked(), user=get_current_user())
     else:
         return render_template("login.html")
 
