@@ -237,33 +237,34 @@ def ping():
 # ================================================================================
 
 
-@app.route("/save_vote", methods=["POST"])
-@flask_login.login_required
-def save_vote():
-    if is_voting_locked():
-        return {}
+# needs reviewing. but likely not needed
+# @app.route("/save_vote", methods=["POST"])
+# @flask_login.login_required
+# def save_vote():
+#     if is_voting_locked():
+#         return {}
 
-    artist = ""
-    vote = ""
-    # there's actually only one entry
-    for k,v in request.form.items():
-        if k.startswith("vote"):
-            artist = k.replace("vote_", "")
-            vote = v
-            break
+#     artist = ""
+#     vote = ""
+#     # there's actually only one entry
+#     for k,v in request.form.items():
+#         if k.startswith("vote"):
+#             artist = k.replace("vote_", "")
+#             vote = v
+#             break
 
-    db = get_db(get_current_event())
+#     db = get_db(get_current_event())
 
-    user = flask_login.current_user.id
+#     user = get_current_user()
 
-    def set_vote(artist, new_vote):
-        def transform(doc):
-            doc['votes'][artist] = new_vote
-        return transform
+#     def set_vote(artist, new_vote):
+#         def transform(doc):
+#             doc['votes'][artist] = new_vote
+#         return transform
 
-    db.update(set_vote(artist, vote), Query().user == user)
+#     db.update(set_vote(artist, vote), Query().user == user)
 
-    return {"status": "ok"}
+#     return {"status": "ok"}
 
 
 

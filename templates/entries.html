@@ -11,7 +11,7 @@
         </iframe>
     </div>
 
-    <form class="my-4" hx-trigger="change" hx-post="/save_vote" hx-swap="none">
+    <form class="my-4" hx-trigger="change" hx-post="/save_votes" hx-swap="none" hx-include="*">
         {% for i in range(1, 6) %}
             {% if votes[entry.artist] == i|string %}
                 <label class="mx-1"><input class="mr-1" type="radio" name="vote_{{ entry.artist }}" value="{{ i }}" checked>{{ i }}</label>
