@@ -11,6 +11,7 @@ flask-login = "*"
 flask-assets = "*"
 gunicorn = "*"
 markdown = "*"
+feedgenerator = "*"
 
 [dev-packages]
 

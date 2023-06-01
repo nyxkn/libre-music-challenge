@@ -10,6 +10,7 @@ from pprint import pprint
 import csv
 from datetime import datetime
 import markdown
+from feedgenerator import Rss201rev2Feed
 
 app = Flask(__name__)
 
@@ -180,9 +181,12 @@ def is_voting_locked():
     return locked
 
 
+def to_date_object(date_str):
+    return datetime.strptime(date_str, "%d/%m/%y")
+
+
 def get_month_and_year(date_str):
-    # Convert the input string to a datetime object
-    date_object = datetime.strptime(date_str, "%d/%m/%y")
+    date_object = to_date_object(date_str)
 
     # Extract the month name and year number from the datetime object
     month_name = date_object.strftime("%B")
@@ -317,6 +321,36 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/rss")
+def rss():
+    events = []
+    with open(events_datafile, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            events.append(row)
+
+    # Create a feed object
+    feed = Rss201rev2Feed(
+        title='Libre Music Challenge',
+        link='https://lmc.nyxkn.org',
+        description='Announcements for the monthly Libre Music Challenge',
+        language='en',
+    )
+
+    for event in events:
+        feed.add_item(
+            title=f'Libre Music Challenge #{event["event"]}',
+            link=event["link"],
+            description=f'The theme for this month is: {event["title"]}',
+            pubdate=to_date_object(event["date"]),
+        )
+
+    # Generate the XML for the feed
+    rss_feed = feed.writeString('utf-8')
+
+    return rss_feed
+
+
 @app.route("/rules")
 def rules():
     rules = read_text_file(rules_md)
@@ -330,7 +364,6 @@ def vote():
         return render_template("vote.html", event_id=get_current_event(), locked=is_voting_locked(), user=get_current_user())
     else:
         return render_template("login.html")
-
 
 
 @app.route("/load_current_entries", methods=["GET"])
@@ -362,7 +395,6 @@ def hall_of_fame():
 
     events.reverse()
     return render_template("events.html", events=events)
-
 
 
 if __name__ == "__main__":
