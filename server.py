@@ -8,7 +8,7 @@ from tinydb import TinyDB, Query, table, operations
 # from flask_assets import Bundle, Environment
 from pprint import pprint
 import csv
-
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -177,6 +177,21 @@ def is_voting_locked():
 
     return locked
 
+
+def get_month_and_year(date_str):
+    # Convert the input string to a datetime object
+    date_object = datetime.strptime(date_str, "%d/%m/%y")
+
+    # Extract the month name and year number from the datetime object
+    month_name = date_object.strftime("%B")
+    year_number = date_object.strftime("%Y")
+
+    # Create the formatted string
+    result = f"{month_name} {year_number}"
+
+    return result
+
+
 # ================================================================================
 # API - PUBLIC
 # ================================================================================
@@ -312,12 +327,13 @@ def load_current_entries():
             event_id=current_event, entries=get_entries(current_event), votes=votes, locked=is_voting_locked())
 
 
-@app.route('/hall-of-fame', methods=["GET"])
+@app.route('/events', methods=["GET"])
 def hall_of_fame():
     events = []
     with open(events_datafile, 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:
+            row['month_date'] = get_month_and_year(row['date'])
             events.append(row)
 
     for event in events:
@@ -325,7 +341,7 @@ def hall_of_fame():
         # event['archive'] = event['archive'].replace("---", "")
 
     events.reverse()
-    return render_template("hall_of_fame.html", events=events)
+    return render_template("events.html", events=events)
 
 
 
