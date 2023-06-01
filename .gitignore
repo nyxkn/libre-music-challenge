@@ -178,8 +178,8 @@ pyrightconfig.json
 
 # ========================================
 # project ignores
-data/
 secret/
+storage/
 tmp/
 *.tmp
 *.sh

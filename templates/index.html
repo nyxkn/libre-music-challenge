@@ -2,34 +2,8 @@
 
 {% block content %}
 
-<!-- <div class="mx-auto max-w-screen"> -->
 <div class="">
-<h1 class="text-4xl mb-16">Libre Music Challenge {{event_id}}</h1>
-
-<h2 class="mb-16">Logged in as: {{user}}</h2>
-
-<!-- <button hx-post="/logout" hx-redirect="/">Logout</button> -->
-<button class="btn mb-16" hx-post="/logout">Logout</button>
-
-{% if event_id > 0 %}
-    <iframe
-        src="https://archive.org/embed/libre-music-challenge-{{ event_id }}&playlist=1&list_height=150"
-        width="500"
-        height="150"
-        frameborder="0"
-        webkitallowfullscreen="true"
-        mozallowfullscreen="true"
-        allowfullscreen>
-    </iframe>
-
-    {% if locked == 1 %}
-        <div class="alert alert-warning my-8"><span class="mx-auto">Vote changes are now locked!</span></div>
-    {% endif %}
-
-    <div id="entries" hx-trigger="load" hx-get="/load_current_entries"></div>
-{% else %}
-    <h2>No event currently running</h2>
-{% endif %}
-
+<h1 class="text-4xl mb-16">Libre Music Challenge</h1>
 </div>
+
 {% endblock content %}

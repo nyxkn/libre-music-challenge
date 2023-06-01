@@ -23,6 +23,13 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 
+users_db = "storage/users.json"
+votes_db = "storage/votes.json"
+current_event_statusfile = "storage/current_event"
+
+events_datafile = "data/lmc.csv"
+
+
 def main():
     app.run(debug=True)
 
@@ -36,7 +43,7 @@ class User(flask_login.UserMixin):
     pass
 
 def user_exists(username):
-    db = TinyDB("data/users.json")
+    db = TinyDB(users_db)
     # db.update(set_vote(artist, vote), Query().user == user)
     query_data = db.search(Query().username == username)
 
@@ -45,12 +52,12 @@ def user_exists(username):
     return False
 
 def create_user(username, password):
-    db = TinyDB("data/users.json")
+    db = TinyDB(users_db)
     db.insert({'username': username, 'password': generate_password_hash(password)})
 
 
 def check_user_auth(username, password):
-    db = TinyDB("data/users.json")
+    db = TinyDB(users_db)
     query_data = db.search(Query().username == username)
 
     if len(query_data) == 1 and check_password_hash(query_data[0]['password'], password):
@@ -132,7 +139,7 @@ def unauthorized_handler():
 # ================================================================================
 
 def get_db(event_id: int):
-    db = TinyDB("data/db.json")
+    db = TinyDB(votes_db)
     table = db.table(str(event_id))
     # this call is required to setup the table in case it's empty (?)
     table.all()
@@ -155,7 +162,7 @@ def get_current_event():
     #     contents = file.read()
     #     current_event = int(contents.rstrip())
 
-    with open("data/current_event", "r") as file:
+    with open(current_event_statusfile, "r") as file:
         lines = [line.strip() for line in file.readlines()]
         current_event = int(lines[0])
 
@@ -164,7 +171,7 @@ def get_current_event():
 
 def is_voting_locked():
     locked = 1
-    with open("data/current_event", "r") as file:
+    with open(current_event_statusfile, "r") as file:
         lines = [line.strip() for line in file.readlines()]
         locked = int(lines[1])
 
@@ -277,9 +284,13 @@ def get_user_votes(event_id: int):
 # ================================================================================
 
 
-
 @app.route("/")
 def home():
+    return render_template("index.html")
+
+
+@app.route("/vote")
+def vote():
     if flask_login.current_user.is_authenticated:
         return render_template("index.html", event_id=get_current_event(), locked=is_voting_locked(), user=get_current_user())
     else:
@@ -304,7 +315,7 @@ def load_current_entries():
 @app.route('/hall-of-fame', methods=["GET"])
 def hall_of_fame():
     events = []
-    with open('data/lmc.csv', 'r') as file:
+    with open(events_datafile, 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:
             events.append(row)
@@ -314,7 +325,7 @@ def hall_of_fame():
         # event['archive'] = event['archive'].replace("---", "")
 
     events.reverse()
-    return render_template("hof.html", events=events)
+    return render_template("hall_of_fame.html", events=events)
 
 
 
