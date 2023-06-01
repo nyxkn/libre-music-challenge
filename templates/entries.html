@@ -5,9 +5,11 @@
 <li class="my-16">
     <h4 class="text-lg font-bold my-4">{{entry.artist}} - {{entry.track}}</h4>
 
-    <iframe src="https://archive.org/embed/libre-music-challenge-{{event_id}}/{{entry.filename}}" width="500" height="30"
-        frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen>
-    </iframe>
+    <div class="flex justify-center">
+        <iframe src="https://archive.org/embed/libre-music-challenge-{{event_id}}/{{entry.filename}}" width="500" height="30"
+            frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen>
+        </iframe>
+    </div>
 
     <form class="my-4" hx-trigger="change" hx-post="/save_vote" hx-swap="none">
         {% for i in range(1, 6) %}

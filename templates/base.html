@@ -8,10 +8,13 @@
     <link href="/static/dist/output.css" rel="stylesheet">
     <script src="/static/src/htmx.min.js"></script>
 
+    {% block head_custom %}
+    {% endblock head_custom %}
+
     <title>Libre Music Challenge</title>
 </head>
 
-<body class="flex justify-center text-center my-16">
+<body class="">
     {% block content %}
     {% endblock content %}
 </body>

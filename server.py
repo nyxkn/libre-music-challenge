@@ -9,6 +9,7 @@ from tinydb import TinyDB, Query, table, operations
 from pprint import pprint
 import csv
 from datetime import datetime
+import markdown
 
 app = Flask(__name__)
 
@@ -28,6 +29,7 @@ votes_db = "storage/votes.json"
 current_event_statusfile = "storage/current_event"
 
 events_datafile = "data/lmc.csv"
+rules_md = "data/rules.md"
 
 
 def main():
@@ -192,6 +194,17 @@ def get_month_and_year(date_str):
     return result
 
 
+def markdown_to_html(markdown_text):
+    html = markdown.markdown(markdown_text)
+    return html
+
+
+def read_text_file(file_path):
+    with open(file_path, 'r') as file:
+        contents = file.read()
+    return contents
+
+
 # ================================================================================
 # API - PUBLIC
 # ================================================================================
@@ -302,6 +315,13 @@ def get_user_votes(event_id: int):
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+@app.route("/rules")
+def rules():
+    rules = read_text_file(rules_md)
+    html_output = markdown_to_html(rules)
+    return render_template("rules.html", rules_html=html_output)
 
 
 @app.route("/vote")
