@@ -12,8 +12,9 @@ pipenv run flask --app server run
 Install CSS frameworks
 
 ``` sh
-npm install tailwindcss
-npm install daisyui
+npm install -D tailwindcss
+npm install -D @tailwindcss/typography
+npm install -D daisyui
 ```
 
 Run CSS compilation
