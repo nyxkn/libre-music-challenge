@@ -21,6 +21,7 @@
 - Voting runs from the 1st to the 15th of the month following the end of the challenge. Failure to vote in time will result in disqualification.
 - Voting is done by giving all submissions a score from 1 to 5 (where 5 is best). You don't vote on your own submission.
 - All participants are required to vote on ALL of the other tracks. Not doing so will result in disqualification.
+- Participants of previous challenges are also welcome to vote, even if they haven't made a submission.
 - The submission with the most points is the winner.
 - There is no prize other than eternal glory.
 - All submissions will be stored on archive.org and freely available under a CC-BY-SA license.
