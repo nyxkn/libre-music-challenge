@@ -350,8 +350,8 @@ def rss():
     rss_feed = feed.writeString('utf-8')
 
     response = make_response(rss_feed)
-    # response.headers['Content-Type'] = 'application/rss+xml'
-    # response.headers['Content-Disposition'] = 'attachment; filename=rss.xml'
+    response.headers['Content-Type'] = 'application/rss+xml'
+    response.headers['Content-Disposition'] = 'inline; filename=feed.rss'
     return response
 
 
