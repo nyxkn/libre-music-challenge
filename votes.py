@@ -16,7 +16,6 @@ def username_to_artist(username):
 def artist_to_username(artist):
     # swap key/value
     # reverse_dict = {v:k for k,v in users_table_cached.items()}
-    print(artist)
     reverse_dict = dict((v,k) for k,v in users_table_cached.items())
     return reverse_dict[artist]
 
@@ -37,10 +36,7 @@ def main():
 
     global users_table_cached
     users_table_cached = c.get_users_table()
-    print(type(users_table_cached))
-    print(users_table_cached)
 
-    print(c.get_event_participants(arg))
     generate_results(arg)
 
 
@@ -67,12 +63,10 @@ def generate_results(event_id):
 
     # sort by name
     votes_given = dict(sorted(votes_given.items()))
-    print(votes_given)
 
     # votes matrixes. currently not being used
     votes_matrix_given = list(votes_given.values())
     votes_matrix_received = numpy.transpose(votes_matrix_given)
-    print(votes_matrix_given)
 
     # ========================================
     # calculate votes distribution
