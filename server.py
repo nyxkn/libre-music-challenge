@@ -6,11 +6,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from internetarchive import get_item
 from tinydb import TinyDB, Query, table, operations
 # from flask_assets import Bundle, Environment
-from pprint import pprint
 import csv
 from datetime import datetime
 import markdown
 from feedgenerator import Rss201rev2Feed
+import common as c
 
 app = Flask(__name__)
 
@@ -25,17 +25,8 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 
-users_db = "storage/users.json"
-votes_db = "storage/votes.json"
-current_event_statusfile = "storage/current_event"
-
-events_datafile = "data/lmc.csv"
-rules_md = "data/rules.md"
-
-
 def main():
     app.run(debug=True)
-
 
 
 # ================================================================================
@@ -45,8 +36,9 @@ def main():
 class User(flask_login.UserMixin):
     pass
 
+
 def user_exists(username):
-    db = TinyDB(users_db)
+    db = TinyDB(c.users_db)
     # db.update(set_vote(artist, vote), Query().user == user)
     query_data = db.search(Query().username == username)
 
@@ -54,13 +46,14 @@ def user_exists(username):
         return True
     return False
 
+
 def create_user(username, password):
-    db = TinyDB(users_db)
+    db = TinyDB(c.users_db)
     db.insert({'username': username, 'password': generate_password_hash(password)})
 
 
 def check_user_auth(username, password):
-    db = TinyDB(users_db)
+    db = TinyDB(c.users_db)
     query_data = db.search(Query().username == username)
 
     if len(query_data) == 1 and check_password_hash(query_data[0]['password'], password):
@@ -141,44 +134,8 @@ def unauthorized_handler():
 # UTILS
 # ================================================================================
 
-def get_db(event_id: int):
-    db = TinyDB(votes_db)
-    table = db.table(str(event_id))
-    # this call is required to setup the table in case it's empty (?)
-    table.all()
-
-    return table
-
 def get_current_user():
     return flask_login.current_user.id
-
-
-
-# event = 0 in current_event file to disable voting and showing
-# locked = 1 to disable changing votes
-# eventually make it automatic depending on date
-
-def get_current_event():
-    current_event = 0
-
-    # with open("current_event", "r") as file:
-    #     contents = file.read()
-    #     current_event = int(contents.rstrip())
-
-    with open(current_event_statusfile, "r") as file:
-        lines = [line.strip() for line in file.readlines()]
-        current_event = int(lines[0])
-
-    return current_event
-
-
-def is_voting_locked():
-    locked = 1
-    with open(current_event_statusfile, "r") as file:
-        lines = [line.strip() for line in file.readlines()]
-        locked = int(lines[1])
-
-    return locked
 
 
 def to_date_object(date_str):
@@ -275,7 +232,7 @@ def save_votes():
     # form for form post
     # args for get url params
 
-    if is_voting_locked():
+    if c.is_voting_locked():
         return {}
 
     user_votes = {}
@@ -286,7 +243,7 @@ def save_votes():
             user_votes[artist] = vote
 
 
-    db = get_db(get_current_event())
+    db = c.get_db(c.get_current_event())
 
     user = get_current_user()
     db.upsert({"user": user, "votes": user_votes}, Query().user == user)
@@ -298,7 +255,7 @@ def save_votes():
 @app.route("/get_my_votes/<int:event_id>", methods=["POST"])
 @flask_login.login_required
 def get_user_votes(event_id: int):
-    db = get_db(event_id)
+    db = c.get_db(event_id)
     db_data = db.search(Query().user == get_current_user())
 
     votes = {}
@@ -325,7 +282,7 @@ def home():
 @app.route("/rss")
 def rss():
     events = []
-    with open(events_datafile, 'r') as file:
+    with open(c.events_datafile, 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:
             events.append(row)
@@ -357,7 +314,7 @@ def rss():
 
 @app.route("/rules")
 def rules():
-    rules = read_text_file(rules_md)
+    rules = read_text_file(c.rules_md)
     html_output = markdown_to_html(rules)
     return render_template("rules.html", rules_html=html_output)
 
@@ -365,14 +322,14 @@ def rules():
 @app.route("/vote")
 def vote():
     if flask_login.current_user.is_authenticated:
-        return render_template("vote.html", event_id=get_current_event(), locked=is_voting_locked(), user=get_current_user())
+        return render_template("vote.html", event_id=c.get_current_event(), locked=c.is_voting_locked(), user=get_current_user())
     else:
         return render_template("login.html")
 
 
 @app.route("/load_current_entries", methods=["GET"])
 def load_current_entries():
-    current_event = get_current_event()
+    current_event = c.get_current_event()
 
     if current_event == 0:
         return {}
@@ -381,13 +338,13 @@ def load_current_entries():
         votes = get_user_votes(current_event)
         return render_template(
             "entries.html",
-            event_id=current_event, entries=get_entries(current_event), votes=votes, locked=is_voting_locked())
+            event_id=current_event, entries=get_entries(current_event), votes=votes, locked=c.is_voting_locked())
 
 
 @app.route('/events', methods=["GET"])
-def hall_of_fame():
+def events():
     events = []
-    with open(events_datafile, 'r') as file:
+    with open(c.events_datafile, 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:
             row['month_date'] = get_month_and_year(row['date'])

@@ -12,6 +12,10 @@ flask-assets = "*"
 gunicorn = "*"
 markdown = "*"
 feedgenerator = "*"
+pandas = "*"
+odswriter = "*"
+odfpy = "*"
+pyyaml = "*"
 
 [dev-packages]
 
