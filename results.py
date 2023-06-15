@@ -159,7 +159,7 @@ def generate_results(event_id):
 
     notes = {'notes': [
         "this spreadsheet was automatically generated with this script:",
-        "https://github.com/nyxkn/libre-music-challenge/blob/main/votes.py",
+        "https://github.com/nyxkn/libre-music-challenge/blob/main/results.py",
     ]}
     notes_df = pd.DataFrame(notes)
 
