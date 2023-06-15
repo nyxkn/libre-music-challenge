@@ -157,6 +157,12 @@ def generate_results(event_id):
     votes_given_chart_df.loc[:,'total given'] = votes_given_chart_df.iloc[:-1].sum(axis=1)
     votes_given_chart_df = votes_given_chart_df.replace(0, numpy.nan)
 
+    notes = {'notes': [
+        "this spreadsheet was automatically generated with this script:",
+        "https://github.com/nyxkn/libre-music-challenge/blob/main/votes.py",
+    ]}
+    notes_df = pd.DataFrame(notes)
+
     # excelwriter has an issue with linters. ignore this error
     # the pylint comment doesn't seem to work. are we even using pylint?
     with pd.ExcelWriter(f"{c.results_path}/lmc{event_id}-results.ods", mode="w", engine="odf") as writer: #pylint: disable=abstract-class-instantiated
@@ -164,6 +170,7 @@ def generate_results(event_id):
         votes_given_chart_df.to_excel(writer, sheet_name="votes")
         generosity_df.to_excel(writer, sheet_name="generosity")
         votes_distribution_df.to_excel(writer, sheet_name="distribution")
+        notes_df.to_excel(writer, sheet_name="notes", header=False, index=False)
 
 
 if __name__ == "__main__":
