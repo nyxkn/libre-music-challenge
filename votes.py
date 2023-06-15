@@ -152,7 +152,7 @@ def generate_results(event_id):
 
     # excelwriter has an issue with linters. ignore this error
     # the pylint comment doesn't seem to work. are we even using pylint?
-    with pd.ExcelWriter(f"{c.results_path}/lmc{event_id}.ods", mode="w", engine="odf") as writer: #pylint: disable=abstract-class-instantiated
+    with pd.ExcelWriter(f"{c.results_path}/lmc{event_id}-results.ods", mode="w", engine="odf") as writer: #pylint: disable=abstract-class-instantiated
         scoreboard_df.to_excel(writer, sheet_name="scoreboard")
         generosity_df.to_excel(writer, sheet_name="generosity")
         votes_distribution_df.to_excel(writer, sheet_name="distribution")
