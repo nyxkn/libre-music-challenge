@@ -155,6 +155,7 @@ def generate_results(event_id):
     votes_given_chart_df.loc['total score',:] = votes_given_chart_df.sum(axis=0)
     # the iloc slice [:-1] selects all rows except last
     votes_given_chart_df.loc[:,'total given'] = votes_given_chart_df.iloc[:-1].sum(axis=1)
+    votes_given_chart_df = votes_given_chart_df.replace(0, numpy.nan)
 
     # excelwriter has an issue with linters. ignore this error
     # the pylint comment doesn't seem to work. are we even using pylint?
