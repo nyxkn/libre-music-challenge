@@ -7,7 +7,7 @@ users_db = "storage/users.json"
 votes_db = "storage/votes.json"
 current_event_statusfile = "storage/current_event"
 
-events_datafile = "data/lmc.csv"
+events_datafile = "data/events.csv"
 rules_md = "data/rules.md"
 users_table = "data/users.yaml"
 event_participants = "data/participants.yaml"
