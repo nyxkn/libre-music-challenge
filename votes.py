@@ -150,10 +150,17 @@ def generate_results(event_id):
     generosity_df = pd.DataFrame.from_dict(generosity_stats, orient='index')
     votes_distribution_df = pd.DataFrame.from_dict(votes_distribution, orient='index')
 
+    votes_given_chart_df = pd.DataFrame.from_dict(votes_given, orient='index')
+    votes_given_chart_df.columns = sorted(participating_usernames)
+    votes_given_chart_df.loc['total score',:] = votes_given_chart_df.sum(axis=0)
+    # the iloc slice [:-1] selects all rows except last
+    votes_given_chart_df.loc[:,'total given'] = votes_given_chart_df.iloc[:-1].sum(axis=1)
+
     # excelwriter has an issue with linters. ignore this error
     # the pylint comment doesn't seem to work. are we even using pylint?
     with pd.ExcelWriter(f"{c.results_path}/lmc{event_id}-results.ods", mode="w", engine="odf") as writer: #pylint: disable=abstract-class-instantiated
         scoreboard_df.to_excel(writer, sheet_name="scoreboard")
+        votes_given_chart_df.to_excel(writer, sheet_name="votes")
         generosity_df.to_excel(writer, sheet_name="generosity")
         votes_distribution_df.to_excel(writer, sheet_name="distribution")
 
