@@ -41,13 +41,13 @@ def get_current_event():
     return current_event
 
 
-def is_voting_locked():
-    locked = 1
+def is_voting_open():
+    open_status = 0
     with open(current_event_statusfile, "r") as file:
         lines = [line.strip() for line in file.readlines()]
-        locked = int(lines[1])
+        open_status = int(lines[1])
 
-    return locked
+    return open_status
 
 
 def get_users_table():

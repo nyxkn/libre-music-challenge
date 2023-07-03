@@ -52,11 +52,51 @@ def create_user(username, password):
     db.insert({'username': username, 'password': generate_password_hash(password)})
 
 
-def check_user_auth(username, password):
+def update_password(username, new_password):
+    db = TinyDB(c.users_db)
+    db.update({'password': generate_password_hash(new_password)}, Query().username == username)
+
+
+def update_or_create_user_if_needed(username, password):
     db = TinyDB(c.users_db)
     query_data = db.search(Query().username == username)
 
-    if len(query_data) == 1 and check_password_hash(query_data[0]['password'], password):
+    if len(query_data) == 1:
+        if query_data[0]['password'] == '':
+            # update password
+            # after the password is cleared from the database (i.e. = ""), it can be reset
+            update_password(username, password)
+    else:
+        # create user
+        # TODO: ideally have a more solid registration and remove allow_any_user
+        allow_any_user = True
+        # create user
+        if allow_any_user:
+            create_user(username, password)
+
+
+def try_login(username, password):
+    db = TinyDB(c.users_db)
+    query_data = db.search(Query().username == username)
+
+    def authenticate_user(username):
+        user = User()
+        user.id = username
+        flask_login.login_user(user)
+
+    if check_password_hash(query_data[0]['password'], password):
+        authenticate_user(username)
+        return True
+    else:
+        return False
+
+
+
+def password_exists(username, password):
+    db = TinyDB(c.users_db)
+    query_data = db.search(Query().username == username)
+
+    if len(query_data) == 1 and query_data[0]['password'] == '':
         return True
     return False
 
@@ -93,16 +133,12 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        # TODO: remove
-        allow_any_user = True
-        if allow_any_user:
-            if username and not user_exists(username):
-                create_user(username, password)
+        if not username or not password:
+            return 'Input a username and a password'
 
-        if check_user_auth(username, password):
-            user = User()
-            user.id = username
-            flask_login.login_user(user)
+        update_or_create_user_if_needed(username, password)
+
+        if try_login(username, password):
             return redirect(url_for('vote'))
 
     return 'Bad login'
@@ -232,7 +268,7 @@ def save_votes():
     # form for form post
     # args for get url params
 
-    if c.is_voting_locked():
+    if not c.is_voting_open():
         return {}
 
     user_votes = {}
@@ -322,7 +358,12 @@ def rules():
 @app.route("/vote")
 def vote():
     if flask_login.current_user.is_authenticated:
-        return render_template("vote.html", event_id=c.get_current_event(), locked=c.is_voting_locked(), user=get_current_user())
+        return render_template(
+            "vote.html",
+            event_id=c.get_current_event(),
+            locked=(not c.is_voting_open()),
+            user=get_current_user()
+        )
     else:
         return render_template("login.html")
 
@@ -338,7 +379,11 @@ def load_current_entries():
         votes = get_user_votes(current_event)
         return render_template(
             "entries.html",
-            event_id=current_event, entries=get_entries(current_event), votes=votes, locked=c.is_voting_locked())
+            event_id=current_event,
+            entries=get_entries(current_event),
+            votes=votes,
+            locked=(not c.is_voting_open())
+        )
 
 
 @app.route('/events', methods=["GET"])
