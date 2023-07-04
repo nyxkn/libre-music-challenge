@@ -1,5 +1,16 @@
-<form action='login' method='POST'>
-    <input type='text' name='username' id='username' placeholder='username' />
-    <input type='password' name='password' id='password' placeholder='password' />
-    <button name='submit'>Login</button>
-</form>
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- <div class="mx-auto m-8 mb-16"> -->
+<div class="mx-auto text-center my-16">
+    <form class="" action='login' method='POST'>
+        <input class="input input-bordered w-full max-w-xs" type='text' name='username' id='username' placeholder='username' />
+        <input class="input input-bordered w-full max-w-xs" type='password' name='password' id='password' placeholder='password' />
+        <button class="btn" name='submit'>Login</button>
+    </form>
+
+    <p class="mt-4 italic">Use the same username as on linuxmusicians, case-insensitive.</p>
+</div>
+
+{% endblock content %}
