@@ -28,7 +28,17 @@
         <div class="alert alert-warning my-8"><span class="mx-auto">Vote changes are now locked!</span></div>
     {% endif %}
 
+    <p class="italic">
+        You need to vote on all tracks by the end of the voting deadline.
+        You can come back and edit your votes anytime until then.
+    </p>
+    <p class="italic mt-4">
+        The vote you assign to your own track won't count towards the final score.
+        But it will still appear on the scoresheet, for fun!
+    </p>
+
     <div id="entries" hx-trigger="load" hx-get="/load_current_entries"></div>
+
 {% else %}
     <h2>No event currently running</h2>
 {% endif %}
