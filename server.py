@@ -5,17 +5,15 @@ import flask_login
 from werkzeug.security import generate_password_hash, check_password_hash
 from internetarchive import get_item
 from tinydb import TinyDB, Query, table, operations
-# from flask_assets import Bundle, Environment
 import csv
 from datetime import datetime
 import markdown
 from feedgenerator import Rss201rev2Feed
 import common as c
+# import re
 
 app = Flask(__name__)
 
-# python -c 'import secrets; print(secrets.token_hex())'
-# app.secret_key = ""
 
 with open("secret/secret_key", "r") as file:
     app.secret_key = file.read().rstrip()
@@ -57,7 +55,8 @@ def update_password(username, new_password):
     db.update({'password': generate_password_hash(new_password)}, Query().username == username)
 
 
-def update_or_create_user_if_needed(username, password):
+# returns error message. empty string for ok
+def update_or_create_user_if_needed(username, password) -> str:
     db = TinyDB(c.users_db)
     query_data = db.search(Query().username == username)
 
@@ -67,12 +66,16 @@ def update_or_create_user_if_needed(username, password):
             # after the password is cleared from the database (i.e. = ""), it can be reset
             update_password(username, password)
     else:
-        # create user
-        # TODO: ideally have a more solid registration and remove allow_any_user
-        allow_any_user = True
-        # create user
-        if allow_any_user:
+        # user not in database, so create user
+        available_usernames = c.get_available_usernames()
+        # query_data = db.search(Query().username.matches(username, flags=re.IGNORECASE))
+        if not username in available_usernames:
+            return "Cannot register with this username"
+        else:
             create_user(username, password)
+
+    return ""
+
 
 
 def try_login(username, password):
@@ -139,7 +142,12 @@ def login():
         if not username.isalnum():
             return "Username should be only letters and numbers"
 
-        update_or_create_user_if_needed(username, password)
+        username = username.lower()
+
+        error = update_or_create_user_if_needed(username, password)
+
+        if error:
+            return error
 
         if try_login(username, password):
             return redirect(url_for('vote'))

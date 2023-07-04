@@ -7,6 +7,8 @@ users_db = "storage/users.json"
 votes_db = "storage/votes.json"
 current_event_statusfile = "storage/current_event"
 
+available_usernames = "secret/available_usernames"
+
 events_datafile = "data/events.csv"
 rules_md = "data/rules.md"
 users_table = "data/users.yaml"
@@ -48,6 +50,13 @@ def is_voting_open():
         open_status = int(lines[1])
 
     return open_status
+
+
+def get_available_usernames():
+    with open(available_usernames, "r") as file:
+        lines = [line.strip() for line in file.readlines()]
+
+    return lines
 
 
 def get_users_table():
