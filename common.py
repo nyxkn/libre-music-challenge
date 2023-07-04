@@ -8,16 +8,16 @@ votes_db = "storage/votes.json"
 current_event_statusfile = "storage/current_event"
 
 available_usernames = "secret/available_usernames"
+users_table = "secret/users.yaml"
 
 events_datafile = "data/events.csv"
 rules_md = "data/rules.md"
-users_table = "data/users.yaml"
 event_participants = "data/participants.yaml"
 
 results_path = "data/results/"
 
 
-def get_db(event_id: int):
+def get_votes_db(event_id: int):
     db = TinyDB(votes_db)
     table = db.table(str(event_id))
     # this call is required to setup the table in case it's empty (?)

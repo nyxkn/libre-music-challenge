@@ -290,7 +290,7 @@ def save_votes():
             user_votes[artist] = vote
 
 
-    db = c.get_db(c.get_current_event())
+    db = c.get_votes_db(c.get_current_event())
 
     user = get_current_user()
     db.upsert({"user": user, "votes": user_votes}, Query().user == user)
@@ -302,7 +302,7 @@ def save_votes():
 @app.route("/get_my_votes/<int:event_id>", methods=["POST"])
 @flask_login.login_required
 def get_user_votes(event_id: int):
-    db = c.get_db(event_id)
+    db = c.get_votes_db(event_id)
     db_data = db.search(Query().user == get_current_user())
 
     votes = {}

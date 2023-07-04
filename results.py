@@ -41,7 +41,9 @@ def main():
 
 
 def generate_results(event_id):
-    db = c.get_db(event_id)
+    db = c.get_votes_db(event_id)
+
+    # always use artist name instead of username
 
     participating_usernames = []
     for artist in c.get_event_participants(event_id):
@@ -50,18 +52,20 @@ def generate_results(event_id):
     votes_received = defaultdict(list)
     votes_given = defaultdict(list)
     for user_entry in db:
+        # user who has given the votes
         if user_entry["user"] in participating_usernames:
             user = user_entry["user"]
             from_artist = username_to_artist(user)
             user_entry["votes"][from_artist] = '0'
             # print(user_entry)
+            # sort votes by to_artist
             user_votes = dict(sorted(user_entry["votes"].items()))
             for to_artist,vote in user_votes.items():
                     votes_received[to_artist].append(int(vote))
                     votes_given[user].append(int(vote))
 
 
-    # sort by name
+    # sort by from_user
     votes_given = dict(sorted(votes_given.items()))
 
     # votes matrixes. currently not being used
@@ -153,6 +157,8 @@ def generate_results(event_id):
     votes_given_chart_df = pd.DataFrame.from_dict(votes_given, orient='index')
     votes_given_chart_df.columns = sorted(participating_usernames)
     votes_given_chart_df.loc['total score',:] = votes_given_chart_df.sum(axis=0)
+    votes_given_chart_df.loc['average',:] = votes_given_chart_df.iloc[:-1].mean(axis=0)
+    votes_given_chart_df.loc['self vote',:] = votes_given_chart_df.iloc[:-1].mean(axis=0)
     # the iloc slice [:-1] selects all rows except last
     votes_given_chart_df.loc[:,'total given'] = votes_given_chart_df.iloc[:-1].sum(axis=1)
     votes_given_chart_df = votes_given_chart_df.replace(0, numpy.nan)
