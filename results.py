@@ -45,28 +45,37 @@ def generate_results(event_id):
 
     # always use artist name instead of username
 
+    participating_artists = c.get_event_participants(event_id)
     participating_usernames = []
-    for artist in c.get_event_participants(event_id):
+    for artist in participating_artists:
         participating_usernames.append(artist_to_username(artist))
+
+    self_votes = {}
 
     votes_received = defaultdict(list)
     votes_given = defaultdict(list)
     for user_entry in db:
-        # user who has given the votes
+        # user who has given the votes. this uses username for user and artistname for given votes
         if user_entry["user"] in participating_usernames:
-            user = user_entry["user"]
-            from_artist = username_to_artist(user)
+            from_user = user_entry["user"]
+            from_artist = username_to_artist(from_user)
+
+            if from_artist in user_entry["votes"]:
+                self_votes[from_artist] = int(user_entry["votes"][from_artist])
+            else:
+                self_votes[from_artist] = numpy.nan
             user_entry["votes"][from_artist] = '0'
-            # print(user_entry)
+
             # sort votes by to_artist
-            user_votes = dict(sorted(user_entry["votes"].items()))
-            for to_artist,vote in user_votes.items():
+            votes_from_user = dict(sorted(user_entry["votes"].items()))
+            for to_artist,vote in votes_from_user.items():
                     votes_received[to_artist].append(int(vote))
-                    votes_given[user].append(int(vote))
+                    votes_given[from_artist].append(int(vote))
 
 
     # sort by from_user
     votes_given = dict(sorted(votes_given.items()))
+    self_votes = dict(sorted(self_votes.items()))
 
     # votes matrixes. currently not being used
     votes_matrix_given = list(votes_given.values())
@@ -97,9 +106,9 @@ def generate_results(event_id):
 
     generosity_stats = {}
 
-    for name,votes in votes_given.items():
-        generosity_stats[name] = {}
-        generosity_stats[name]['given'] = sum(votes)
+    for artist,votes in votes_given.items():
+        generosity_stats[artist] = {}
+        generosity_stats[artist]['given'] = sum(votes)
 
     generosity_sum = 0
     for k,v in generosity_stats.items():
@@ -107,7 +116,7 @@ def generate_results(event_id):
 
     avg_generosity = generosity_sum / len(generosity_stats.keys())
 
-    for name,stats in generosity_stats.items():
+    for artist,stats in generosity_stats.items():
         stats['generosity'] = round((stats['given'] - avg_generosity) / avg_generosity * 100, 1)
 
     # ========================================
@@ -139,9 +148,9 @@ def generate_results(event_id):
 
     scoreboard = {}
     counter = 1
-    for name,stats in participant_stats_ordered.items():
+    for artist,stats in participant_stats_ordered.items():
         entry = {}
-        entry["name"] = name
+        entry["name"] = artist
         # this appends stats dict to our entry dict
         entry.update(stats.copy())
         scoreboard[counter] = entry
@@ -155,13 +164,20 @@ def generate_results(event_id):
     votes_distribution_df = pd.DataFrame.from_dict(votes_distribution, orient='index')
 
     votes_given_chart_df = pd.DataFrame.from_dict(votes_given, orient='index')
-    votes_given_chart_df.columns = sorted(participating_usernames)
-    votes_given_chart_df.loc['total score',:] = votes_given_chart_df.sum(axis=0)
-    votes_given_chart_df.loc['average',:] = votes_given_chart_df.iloc[:-1].mean(axis=0)
-    votes_given_chart_df.loc['self vote',:] = votes_given_chart_df.iloc[:-1].mean(axis=0)
+    votes_given_chart_df.columns = sorted(participating_artists)
+    votes_given_chart_df = votes_given_chart_df.replace(0, numpy.nan)
+
+    votes_given_chart_df.loc['total score',:] = votes_given_chart_df.sum(axis=0, skipna=True)
     # the iloc slice [:-1] selects all rows except last
     votes_given_chart_df.loc[:,'total given'] = votes_given_chart_df.iloc[:-1].sum(axis=1)
-    votes_given_chart_df = votes_given_chart_df.replace(0, numpy.nan)
+
+    votes_given_chart_df.loc[''] = pd.Series([None] * len(votes_given_chart_df.columns))
+
+    # average of participant columns (all minus the last one)
+    # for participant rows (all minus last two we just added)
+    votes_given_chart_df.loc['average',:] = votes_given_chart_df.iloc[:-2, :-1].mean(axis=0, skipna=True)
+    # when setting the row, we need to add an extra value to match the total row length
+    votes_given_chart_df.loc['self vote',:] = list(self_votes.values()) + [numpy.nan]
 
     notes = {'notes': [
         "this spreadsheet was automatically generated with this script:",
