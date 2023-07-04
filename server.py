@@ -136,6 +136,9 @@ def login():
         if not username or not password:
             return 'Input a username and a password'
 
+        if not username.isalnum():
+            return "Username should be only letters and numbers"
+
         update_or_create_user_if_needed(username, password)
 
         if try_login(username, password):
