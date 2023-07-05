@@ -226,6 +226,8 @@ def get_entries(event_id: int):
     for file in item.files:
         if file["source"] == "original" and file["name"].endswith(".flac"):
             entry = file["name"].replace(".flac", "").split(" - ")
+            # we should maybe convert artist to username in here and send that along?
+            # but maybe more chances to go wrong
             entries.append({"artist": entry[0], "track": entry[1], "filename": file["name"]})
 
     return entries

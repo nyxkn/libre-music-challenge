@@ -6,6 +6,7 @@ import statistics
 import pandas as pd
 import numpy
 import common as c
+import copy
 
 
 users_table_cached = {}
@@ -40,6 +41,13 @@ def main():
     generate_results(arg)
 
 
+
+def rename_dict_key(dictionary, old_key, new_key):
+    if old_key in dictionary:
+        dictionary[new_key] = dictionary[old_key]
+        del dictionary[old_key]
+
+
 def generate_results(event_id):
     db = c.get_votes_db(event_id)
 
@@ -54,23 +62,34 @@ def generate_results(event_id):
 
     votes_received = defaultdict(list)
     votes_given = defaultdict(list)
-    for user_entry in db:
-        # user who has given the votes. this uses username for user and artistname for given votes
-        if user_entry["user"] in participating_usernames:
-            from_user = user_entry["user"]
-            from_artist = username_to_artist(from_user)
 
-            if from_artist in user_entry["votes"]:
-                self_votes[from_artist] = int(user_entry["votes"][from_artist])
+    # rename all artist names to usernames
+    user_entries_orig = db.all()
+    user_entries = copy.deepcopy(user_entries_orig)
+    for i in range(len(user_entries_orig)):
+        entry = user_entries_orig[i]
+        for to_artist in entry["votes"]:
+            to_user = artist_to_username(to_artist)
+            rename_dict_key(user_entries[i]["votes"], to_artist, to_user)
+
+
+    for user_entry in user_entries:
+        if user_entry["user"] in participating_usernames:
+            # user who has given the votes
+            from_user = user_entry["user"]
+
+            # if we have a self vote, store it
+            if from_user in user_entry["votes"]:
+                self_votes[from_user] = int(user_entry["votes"][from_user])
             else:
-                self_votes[from_artist] = numpy.nan
-            user_entry["votes"][from_artist] = '0'
+                self_votes[from_user] = numpy.nan
+            user_entry["votes"][from_user] = '0'
 
             # sort votes by to_artist
             votes_from_user = dict(sorted(user_entry["votes"].items()))
-            for to_artist,vote in votes_from_user.items():
-                    votes_received[to_artist].append(int(vote))
-                    votes_given[from_artist].append(int(vote))
+            for to_user,vote in votes_from_user.items():
+                votes_received[to_user].append(int(vote))
+                votes_given[from_user].append(int(vote))
 
 
     # sort by from_user
@@ -106,9 +125,9 @@ def generate_results(event_id):
 
     generosity_stats = {}
 
-    for artist,votes in votes_given.items():
-        generosity_stats[artist] = {}
-        generosity_stats[artist]['given'] = sum(votes)
+    for user,votes in votes_given.items():
+        generosity_stats[user] = {}
+        generosity_stats[user]['given'] = sum(votes)
 
     generosity_sum = 0
     for k,v in generosity_stats.items():
@@ -116,7 +135,7 @@ def generate_results(event_id):
 
     avg_generosity = generosity_sum / len(generosity_stats.keys())
 
-    for artist,stats in generosity_stats.items():
+    for user,stats in generosity_stats.items():
         stats['generosity'] = round((stats['given'] - avg_generosity) / avg_generosity * 100, 1)
 
     # ========================================
@@ -124,15 +143,15 @@ def generate_results(event_id):
 
     participant_stats = {}
 
-    for artist,votes in votes_received.items():
+    for user,votes in votes_received.items():
         votes_sum = sum(votes)
         avg = statistics.mean(filter(lambda x: x != 0, votes))
-        participant_stats[artist] = {
+        participant_stats[user] = {
             'score': votes_sum,
             'average': avg,
         }
         for v in range(5, 0, -1):
-            participant_stats[artist][str(v) + "s"] = len(list(filter(lambda n: n == v, votes)))
+            participant_stats[user][str(v) + "s"] = len(list(filter(lambda n: n == v, votes)))
 
     def score_sort(item):
         return (item[1]["score"],
@@ -148,9 +167,9 @@ def generate_results(event_id):
 
     scoreboard = {}
     counter = 1
-    for artist,stats in participant_stats_ordered.items():
+    for user,stats in participant_stats_ordered.items():
         entry = {}
-        entry["name"] = artist
+        entry["name"] = user
         # this appends stats dict to our entry dict
         entry.update(stats.copy())
         scoreboard[counter] = entry
@@ -164,7 +183,7 @@ def generate_results(event_id):
     votes_distribution_df = pd.DataFrame.from_dict(votes_distribution, orient='index')
 
     votes_given_chart_df = pd.DataFrame.from_dict(votes_given, orient='index')
-    votes_given_chart_df.columns = sorted(participating_artists)
+    votes_given_chart_df.columns = sorted(participating_usernames)
     votes_given_chart_df = votes_given_chart_df.replace(0, numpy.nan)
 
     votes_given_chart_df.loc['total score',:] = votes_given_chart_df.sum(axis=0, skipna=True)
