@@ -74,9 +74,10 @@ def generate_results(event_id):
 
 
     for user_entry in user_entries:
-        if user_entry["user"] in participating_usernames:
+        from_user = user_entry["user"]
+
+        if from_user in participating_usernames:
             # user who has given the votes
-            from_user = user_entry["user"]
 
             # if we have a self vote, store it
             if from_user in user_entry["votes"]:
@@ -85,16 +86,24 @@ def generate_results(event_id):
                 self_votes[from_user] = numpy.nan
             user_entry["votes"][from_user] = '0'
 
-            # sort votes by to_artist
-            votes_from_user = dict(sorted(user_entry["votes"].items()))
-            for to_user,vote in votes_from_user.items():
-                votes_received[to_user].append(int(vote))
-                votes_given[from_user].append(int(vote))
+        # sort votes by to_artist
+        votes_from_user = dict(sorted(user_entry["votes"].items()))
+        for to_user,vote in votes_from_user.items():
+            votes_received[to_user].append(int(vote))
+            votes_given[from_user].append(int(vote))
 
+
+    def my_sort(tuple):
+        user = tuple[0]
+        # sort participating users first, non-participating last
+        # then by name
+        return (not user in participating_usernames, user)
 
     # sort by from_user
-    votes_given = dict(sorted(votes_given.items()))
+    votes_given = dict(sorted(votes_given.items(), key=my_sort))
     self_votes = dict(sorted(self_votes.items()))
+
+    print(votes_given)
 
     # votes matrixes. currently not being used
     votes_matrix_given = list(votes_given.values())
@@ -146,6 +155,7 @@ def generate_results(event_id):
     for user,votes in votes_received.items():
         votes_sum = sum(votes)
         avg = statistics.mean(filter(lambda x: x != 0, votes))
+        avg = round(avg, 1)
         participant_stats[user] = {
             'score': votes_sum,
             'average': avg,
@@ -194,13 +204,23 @@ def generate_results(event_id):
 
     # average of participant columns (all minus the last one)
     # for participant rows (all minus last two we just added)
-    votes_given_chart_df.loc['average',:] = votes_given_chart_df.iloc[:-2, :-1].mean(axis=0, skipna=True)
+    # this would calculate the average again. but we already have that, so just use that
+    # votes_given_chart_df.loc['average',:] = votes_given_chart_df.iloc[:-2, :-1].mean(axis=0, skipna=True)
+    avgs_list = []
+    for k,v in participant_stats.items():
+        avgs_list.append(v['average'])
+    votes_given_chart_df.loc['average',:] = avgs_list + [numpy.nan]
+
     # when setting the row, we need to add an extra value to match the total row length
     votes_given_chart_df.loc['self vote',:] = list(self_votes.values()) + [numpy.nan]
 
     notes = {'notes': [
         "this spreadsheet was automatically generated with this script:",
         "https://github.com/nyxkn/libre-music-challenge/blob/main/results.py",
+        "",
+        "generosity",
+        "a generosity of 0 is the average generosity",
+        "positive/negative values show how much more/less generous than the average the voting was"
     ]}
     notes_df = pd.DataFrame(notes)
 
