@@ -70,7 +70,7 @@ def update_or_create_user_if_needed(username, password) -> str:
         available_usernames = c.get_available_usernames()
         # query_data = db.search(Query().username.matches(username, flags=re.IGNORECASE))
         if not username in available_usernames:
-            return "Cannot register with this username"
+            return "Cannot register with this username. If you're not a participant but want to vote, let us know and we'll enable an account for you."
         else:
             create_user(username, password)
 
