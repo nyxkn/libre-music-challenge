@@ -92,6 +92,21 @@ def generate_results(event_id):
             votes_received[to_user].append(int(vote))
             votes_given[from_user].append(int(vote))
 
+    missing_votes = False
+    for user in participating_usernames:
+        if not user in votes_given or len(votes_given[user]) < len(participating_usernames):
+            print(f"user {user} has not completed the voting")
+            missing_votes = True
+
+    for user,votes in votes_given.items():
+        if not user in participating_usernames and len(votes) < len(participating_artists):
+            print(f"non-participant {user} has started but not completed the voting")
+            missing_votes = True
+
+    if missing_votes:
+        print("=== votes are still missing. exiting. ===")
+        exit()
+
 
     def my_sort(tuple):
         user = tuple[0]
