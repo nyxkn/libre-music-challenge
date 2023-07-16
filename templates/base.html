@@ -18,8 +18,15 @@
     {% block content %}
     {% endblock content %}
 
-    <footer class="p-10 bg-gray-100 text-center text-sm">
-        <p>Source code of this website is available at <a class="link" href="https://github.com/nyxkn/libre-music-challenge">Github</a>.</p>
+    <footer class="footer footer-center p-10 bg-gray-100 text-center text-sm">
+        <div class="grid grid-flow-col gap-4">
+            <a class="link link-hover" href="/">Home</a>
+            <a class="link link-hover" href="/events">Events</a>
+            <a class="link link-hover" href="/rules">Rules</a>
+            <a class="link link-hover" href="/vote">Vote</a>
+            <a class="link link-hover" href="/rss">RSS</a>
+        </div>
+        <p class="grid grid-flow-col gap-1">Source code of this website is available at <a class="link" href="https://github.com/nyxkn/libre-music-challenge">Github</a></p>
     </footer>
 
 </body>
