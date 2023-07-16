@@ -118,8 +118,6 @@ def generate_results(event_id):
     votes_given = dict(sorted(votes_given.items(), key=my_sort))
     self_votes = dict(sorted(self_votes.items()))
 
-    print(votes_given)
-
     # votes matrixes. currently not being used
     votes_matrix_given = list(votes_given.values())
     votes_matrix_received = numpy.transpose(votes_matrix_given)
@@ -194,7 +192,7 @@ def generate_results(event_id):
     counter = 1
     for user,stats in participant_stats_ordered.items():
         entry = {}
-        entry["name"] = user
+        entry["name"] = username_to_artist(user)
         # this appends stats dict to our entry dict
         entry.update(stats.copy())
         scoreboard[counter] = entry
