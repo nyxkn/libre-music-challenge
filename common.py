@@ -53,10 +53,8 @@ def is_voting_open():
 
 
 def get_available_usernames():
-    with open(available_usernames, "r") as file:
-        lines = [line.strip() for line in file.readlines()]
-
-    return lines
+    users = get_users_table()
+    return list(users.keys())
 
 
 def get_users_table():
@@ -70,3 +68,4 @@ def get_event_participants(event_id):
         data = yaml.safe_load(file)
 
     return data[event_id]
+
