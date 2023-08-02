@@ -182,7 +182,7 @@ secret/
 storage/
 tmp/
 *.tmp
-*.sh
+/*.sh
 
 # httpie test session
 session.json
