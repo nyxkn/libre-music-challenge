@@ -17,6 +17,8 @@ for flac_file in "$path"/*.flac; do
 	artist_name="${artist_track%% - *}" # Extract the artist name
 	track_name="${artist_track#* - }"   # Extract the track name
 
+	# remove existing tags (otherwise --set-tag just adds a second one)
+	metaflac --remove-tag="ARTIST" --remove-tag="TITLE" "$flac_file"
 	# Use metaflac to set the artist and track name in the FLAC file's metadata
 	metaflac --set-tag="ARTIST=$artist_name" --set-tag="TITLE=$track_name" "$flac_file"
 done
