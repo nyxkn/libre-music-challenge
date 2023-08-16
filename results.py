@@ -7,6 +7,7 @@ import pandas as pd
 import numpy
 import common as c
 import copy
+import os
 
 
 users_table_cached = {}
@@ -237,14 +238,20 @@ def generate_results(event_id):
     ]}
     notes_df = pd.DataFrame(notes)
 
-    # excelwriter has an issue with linters. ignore this error
-    # the pylint comment doesn't seem to work. are we even using pylint?
-    with pd.ExcelWriter(f"{c.results_path}/lmc{event_id}-results.ods", mode="w", engine="odf") as writer: #pylint: disable=abstract-class-instantiated
-        scoreboard_df.to_excel(writer, sheet_name="scoreboard")
-        votes_given_chart_df.to_excel(writer, sheet_name="votes")
-        generosity_df.to_excel(writer, sheet_name="generosity")
-        votes_distribution_df.to_excel(writer, sheet_name="distribution")
-        notes_df.to_excel(writer, sheet_name="notes", header=False, index=False)
+
+    filename = f"{c.results_path}/lmc{event_id}-results.ods"
+    if os.path.exists(filename):
+        print(f"{filename} already exists!")
+        exit()
+    else:
+        # excelwriter has an issue with linters. ignore this error
+        # the pylint comment doesn't seem to work. are we even using pylint?
+        with pd.ExcelWriter(f"{c.results_path}/lmc{event_id}-results.ods", mode="w", engine="odf") as writer: #pylint: disable=abstract-class-instantiated
+            scoreboard_df.to_excel(writer, sheet_name="scoreboard")
+            votes_given_chart_df.to_excel(writer, sheet_name="votes")
+            generosity_df.to_excel(writer, sheet_name="generosity")
+            votes_distribution_df.to_excel(writer, sheet_name="distribution")
+            notes_df.to_excel(writer, sheet_name="notes", header=False, index=False)
 
 
 if __name__ == "__main__":
