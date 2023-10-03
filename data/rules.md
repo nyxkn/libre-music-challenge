@@ -14,6 +14,9 @@
 - You must announce your submission in this forum thread, providing a link to your song.
   You must also include a short description of how it was made. Specifically, list all of the software and plugins that you have used.
 - You can upload your track anywhere you like. However, you must in any case provide access to the song audio file. This is so that we can store the tracks into our archive.
+- You must provide your audio file in a libre file format. Generally either FLAC or Ogg Vorbis.
+  The file name must follow the following convention: "Artist Name - Song Name". You can use any capitalization you like.
+  A WAV file is allowed, but it will be encoded as FLAC for the archive upload.
 - Publishing your project files is not mandatory but encouraged, in the spirit of learning and sharing knowledge with each other.
 - You can keep working on your submitted track until the challenge is over. Only the final version will be considered for voting.
 
