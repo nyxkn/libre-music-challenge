@@ -10,6 +10,7 @@ from datetime import datetime
 import markdown
 from feedgenerator import Rss201rev2Feed
 import common as c
+import os
 # import re
 
 app = Flask(__name__)
@@ -222,13 +223,20 @@ def read_text_file(file_path):
 def get_entries(event_id: int):
     item = get_item("libre-music-challenge-" + str(event_id))
 
+    allowed_formats = [".flac", ".ogg"]
     entries = []
     for file in item.files:
-        if file["source"] == "original" and file["name"].endswith(".flac"):
-            entry = file["name"].replace(".flac", "").split(" - ")
-            # we should maybe convert artist to username in here and send that along?
-            # but maybe more chances to go wrong
-            entries.append({"artist": entry[0], "track": entry[1], "filename": file["name"]})
+        if file["source"] == "original":
+            allowed = False
+            for ext in allowed_formats:
+                if file["name"].endswith(ext):
+                    allowed = True
+                    break
+            if allowed:
+                entry = os.path.splitext(file["name"])[0].split(" - ")
+                # we should maybe convert artist to username in here and send that along?
+                # but maybe more chances to go wrong
+                entries.append({"artist": entry[0], "track": entry[1], "filename": file["name"]})
 
     return entries
 
