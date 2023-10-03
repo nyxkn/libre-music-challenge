@@ -354,7 +354,7 @@ def rss():
 
     for event in events:
         feed.add_item(
-            title=f'Libre Music Challenge #{event["event"]}',
+            title=f'Libre Music Challenge #{event["event"]}: {event["title"]}',
             link=event["link"],
             description=f'The theme for this month is: {event["title"]}',
             pubdate=to_date_object(event["date"]),
