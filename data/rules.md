@@ -13,7 +13,7 @@
   You can publish your song under a different license if you like, but CC-BY-SA is the license that we will apply to your song once it's in the archive of the challenge.
 - You must announce your submission in this forum thread, providing a link to your song.
   You must also include a short description of how it was made. Specifically, list all of the software and plugins that you have used.
-- You can upload your track anywhere you like. However, you must in any case provide access to the song audio file. This is so that we can store the tracks into our archive.
+- You can upload your track anywhere you like. However, you must provide access to the audio file to your song. This is so that we can store the tracks into our archive.
 - You must provide your audio file in a libre file format. Generally either FLAC or Ogg Vorbis.
   The file name must follow the following convention: "Artist Name - Song Name". You can use any capitalization you like.
   A WAV file is allowed, but it will be encoded as FLAC for the archive upload.
