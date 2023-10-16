@@ -44,6 +44,9 @@ def main():
 
 
 def rename_dict_key(dictionary, old_key, new_key):
+    if old_key == new_key:
+        return
+
     if old_key in dictionary:
         dictionary[new_key] = dictionary[old_key]
         del dictionary[old_key]
@@ -93,6 +96,7 @@ def generate_results(event_id):
             votes_received[to_user].append(int(vote))
             votes_given[from_user].append(int(vote))
 
+
     missing_votes = False
     for user in participating_usernames:
         if not user in votes_given or len(votes_given[user]) < len(participating_usernames):
@@ -107,6 +111,10 @@ def generate_results(event_id):
     if missing_votes:
         print("=== votes are still missing. exiting. ===")
         exit()
+    else:
+        answer = input("all votes are present. continue? (y/N)")
+        if answer != "y":
+            exit()
 
 
     def my_sort(tuple):
