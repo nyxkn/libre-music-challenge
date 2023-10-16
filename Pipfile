@@ -4,7 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
+# you can update to flask 3 when flask-login releases a new version (>0.6.2)
+# for now, pinning flask and werkzeug to <3
+flask = "<3.0"
+werkzeug = "<3.0"
 internetarchive = "*"
 tinydb = "*"
 flask-login = "*"
