@@ -112,9 +112,10 @@ def generate_results(event_id):
         print("=== votes are still missing. exiting. ===")
         exit()
     else:
-        answer = input("all votes are present. continue? (y/N)")
-        if answer != "y":
-            exit()
+        print("=== all votes are present! continuing. ===")
+        # answer = input("all votes are present. continue? (y/N)")
+        # if answer != "y":
+        #     exit()
 
 
     def my_sort(tuple):
@@ -158,7 +159,7 @@ def generate_results(event_id):
 
     for user,votes in votes_given.items():
         generosity_stats[user] = {}
-        generosity_stats[user]['given'] = sum(votes)
+        generosity_stats[user]['given'] = sum(votes) / len(votes)
 
     generosity_sum = 0
     for k,v in generosity_stats.items():
@@ -221,6 +222,8 @@ def generate_results(event_id):
     votes_given_chart_df.loc['total score',:] = votes_given_chart_df.sum(axis=0, skipna=True)
     # the iloc slice [:-1] selects all rows except last
     votes_given_chart_df.loc[:,'total given'] = votes_given_chart_df.iloc[:-1].sum(axis=1)
+    # to only show total given for participating users:
+    # votes_given_chart_df.loc[:,'total given'] = votes_given_chart_df.iloc[:len(participating_usernames)].sum(axis=1)
 
     votes_given_chart_df.loc[''] = pd.Series([None] * len(votes_given_chart_df.columns))
 
@@ -248,18 +251,19 @@ def generate_results(event_id):
 
 
     filename = f"{c.results_path}/lmc{event_id}-results.ods"
+
     if os.path.exists(filename):
         print(f"{filename} already exists!")
         exit()
-    else:
-        # excelwriter has an issue with linters. ignore this error
-        # the pylint comment doesn't seem to work. are we even using pylint?
-        with pd.ExcelWriter(f"{c.results_path}/lmc{event_id}-results.ods", mode="w", engine="odf") as writer: #pylint: disable=abstract-class-instantiated
-            scoreboard_df.to_excel(writer, sheet_name="scoreboard")
-            votes_given_chart_df.to_excel(writer, sheet_name="votes")
-            generosity_df.to_excel(writer, sheet_name="generosity")
-            votes_distribution_df.to_excel(writer, sheet_name="distribution")
-            notes_df.to_excel(writer, sheet_name="notes", header=False, index=False)
+
+    # excelwriter has an issue with python linters. ignore this error
+    # the pylint comment doesn't seem to work. are we even using pylint?
+    with pd.ExcelWriter(f"{c.results_path}/lmc{event_id}-results.ods", mode="w", engine="odf") as writer: #pylint: disable=abstract-class-instantiated
+        scoreboard_df.to_excel(writer, sheet_name="scoreboard")
+        votes_given_chart_df.to_excel(writer, sheet_name="votes")
+        generosity_df.to_excel(writer, sheet_name="generosity")
+        votes_distribution_df.to_excel(writer, sheet_name="distribution")
+        notes_df.to_excel(writer, sheet_name="notes", header=False, index=False)
 
 
 if __name__ == "__main__":
