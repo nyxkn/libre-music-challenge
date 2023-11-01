@@ -7,12 +7,10 @@ users_db = "storage/users.json"
 votes_db = "storage/votes.json"
 current_event_statusfile = "storage/current_event"
 
-available_usernames = "secret/available_usernames"
-users_table = "secret/users.yaml"
-
 events_datafile = "data/events.csv"
 rules_md = "data/rules.md"
 event_participants = "data/participants.yaml"
+users_table = "data/users.yaml"
 
 results_path = "data/results/"
 
@@ -52,15 +50,15 @@ def is_voting_open():
     return open_status
 
 
-def get_available_usernames():
-    users = get_users_table()
-    return list(users.keys())
-
-
 def get_users_table():
     with open(users_table, 'r') as file:
         data = yaml.safe_load(file)
     return data['users']
+
+
+def get_available_usernames():
+    users = get_users_table()
+    return list(users.keys())
 
 
 def get_event_participants(event_id):
