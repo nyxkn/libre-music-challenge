@@ -3,7 +3,7 @@
 from flask import Flask, request, render_template, redirect, url_for, make_response
 import flask_login
 from werkzeug.security import generate_password_hash, check_password_hash
-from internetarchive import get_item
+import internetarchive
 from tinydb import TinyDB, Query, table, operations
 import csv
 from datetime import datetime
@@ -221,7 +221,7 @@ def read_text_file(file_path):
 
 @app.route("/get_entries/<int:event_id>", methods=["GET"])
 def get_entries(event_id: int):
-    item = get_item("libre-music-challenge-" + str(event_id))
+    item = internetarchive.get_item("libre-music-challenge-" + str(event_id))
 
     allowed_formats = [".flac", ".ogg"]
     entries = []
@@ -395,7 +395,6 @@ def load_current_entries():
 
     if current_event == 0:
         return {}
-
     else:
         votes = get_user_votes(current_event)
         return render_template(
