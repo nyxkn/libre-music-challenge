@@ -8,7 +8,7 @@ from tinydb import TinyDB, Query, table, operations
 import csv
 from datetime import datetime
 import markdown
-from feedgenerator import Rss201rev2Feed
+import feedgenerator
 import common as c
 import os
 # import re
@@ -345,7 +345,9 @@ def rss():
             events.append(row)
 
     # Create a feed object
-    feed = Rss201rev2Feed(
+    # or use Atom1Feed for an atom feed. both have the same api, also for add_item
+    # feed = feedgenerator.Atom1Feed(
+    feed = feedgenerator.Rss201rev2Feed(
         title='Libre Music Challenge',
         link='https://lmc.nyxkn.org',
         description='Announcements for the monthly Libre Music Challenge',
@@ -357,6 +359,7 @@ def rss():
             title=f'Libre Music Challenge #{event["event"]}: {event["title"]}',
             link=event["link"],
             description=f'The theme for this month is: {event["title"]}',
+            unique_id=event["event"],
             pubdate=to_date_object(event["date"]),
         )
 
@@ -364,6 +367,7 @@ def rss():
     rss_feed = feed.writeString('utf-8')
 
     response = make_response(rss_feed)
+    # set atom+xml in case of atom
     response.headers['Content-Type'] = 'application/rss+xml'
     response.headers['Content-Disposition'] = 'inline; filename=feed.rss'
     return response
