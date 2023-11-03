@@ -4,7 +4,7 @@ from flask import Flask, request, render_template, redirect, url_for, make_respo
 import flask_login
 from werkzeug.security import generate_password_hash, check_password_hash
 import internetarchive
-from tinydb import TinyDB, Query, table, operations
+from tinydb import TinyDB, Query
 import csv
 from datetime import datetime
 import markdown
@@ -355,10 +355,12 @@ def rss():
     )
 
     for event in events:
+        date_obj = datetime.strptime(event["date"], '%d/%m/%y')
+        month_year = date_obj.strftime('%B %Y')
         feed.add_item(
-            title=f'Libre Music Challenge #{event["event"]}: {event["title"]}',
+            title=f'"{event["title"]}" - LMC #{event["event"]} ({month_year})',
             link=event["link"],
-            description=f'The theme for this month is: {event["title"]}',
+            description=f'The theme for the month of {month_year} is: {event["title"]}\n{event["link"]}',
             unique_id=event["event"],
             pubdate=to_date_object(event["date"]),
         )
