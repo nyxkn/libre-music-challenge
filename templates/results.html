@@ -1,0 +1,32 @@
+{% extends "base.html" %} {% block content %}
+
+<script src="//unpkg.com/alpinejs"></script>
+
+<div class="mx-auto text-center my-16">
+  <h1 class="text-4xl mb-8">Results</h1>
+  <h2 class="text-3xl mb-16">LMC #{{event_id}}</h2>
+
+  <ul class="text-xl">
+    {% for place,result in results.items() %}
+
+    <li x-data="{ showContent: false }" class="my-8 flex items-center mx-auto max-w-xl gap-8">
+      <button class="btn" @click="showContent = !showContent">Show</button>
+      <div class="border border-black rounded-xl w-full p-6 flex gap-8">
+        <span>{{place}}.</span>
+        <div
+          id="content"
+          class="text-black transition-opacity duration-1000 flex items-center gap-8 text-center flex-grow"
+          x-bind:class="showContent ? 'opacity-100' : 'opacity-0'"
+        >
+          <span class="flex-grow font-bold">{{result.name}}</span>
+          <span class="">{{result.score}}</span>
+          <span class="font-bold">{{result.average}}</span>
+        </div>
+      </div>
+    </li>
+
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock content %}

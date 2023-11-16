@@ -11,6 +11,7 @@ import markdown
 import feedgenerator
 import common as c
 import os
+import json
 # import re
 
 app = Flask(__name__)
@@ -427,6 +428,20 @@ def events():
 
     events.reverse()
     return render_template("events.html", events=events)
+
+
+@app.route('/results/<int:event_id>', methods=["GET"])
+def results(event_id: int):
+    print(event_id)
+    results = {}
+    filename = f"{c.results_path}/lmc{event_id}-scoreboard.json"
+    if not os.path.exists(filename):
+        return "Missing data for this event"
+
+    with open(filename, 'r') as json_file:
+        results = json.load(json_file)
+
+    return render_template("results.html", event_id=event_id, results=results)
 
 
 if __name__ == "__main__":

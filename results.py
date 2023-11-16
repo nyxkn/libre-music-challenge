@@ -8,6 +8,7 @@ import numpy
 import common as c
 import copy
 import os
+import json
 
 
 users_table_cached = {}
@@ -222,6 +223,17 @@ def generate_results(event_id):
         scoreboard[counter] = entry
         counter += 1
 
+
+    # ========================================
+    # generate json file
+    # Specify the file name
+
+    json_filename = f"{c.results_path}/lmc{event_id}-scoreboard.json"
+
+    # Write the dictionary to a file
+    with open(json_filename, 'w') as json_file:
+        json.dump(scoreboard, json_file, indent=4)
+
     # ========================================
     # generate ods file
 
@@ -267,7 +279,7 @@ def generate_results(event_id):
     filename = f"{c.results_path}/lmc{event_id}-results.ods"
 
     if os.path.exists(filename):
-        print(f"{filename} already exists!")
+        print(f"{filename} already exists! aborting")
         exit()
 
     # excelwriter has an issue with python linters. ignore this error

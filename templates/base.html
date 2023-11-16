@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link href="/static/dist/output.css" rel="stylesheet">
+    <link href="/static/dist/output.css" rel="stylesheet" />
     <script src="/static/src/htmx.min.js"></script>
 
-    {% block head_custom %}
-    {% endblock head_custom %}
+    {% block head_custom %} {% endblock head_custom %}
 
     <title>Libre Music Challenge</title>
-</head>
+  </head>
 
-<body class="">
-    {% block content %}
-    {% endblock content %}
+  <body class="bg-white text-black">
+    {% block content %} {% endblock content %}
 
     <footer class="footer footer-center p-10 bg-gray-100 text-center text-sm">
-        <div class="grid grid-flow-col gap-4">
-            <a class="link link-hover" href="/">Home</a>
-            <a class="link link-hover" href="/events">Events</a>
-            <a class="link link-hover" href="/rules">Rules</a>
-            <a class="link link-hover" href="/vote">Vote</a>
-            <a class="link link-hover" href="/rss">RSS</a>
-        </div>
-        <p class="grid grid-flow-col gap-1">Source code of this website is available at <a class="link" href="https://github.com/nyxkn/libre-music-challenge">Github</a></p>
+      <div class="grid grid-flow-col gap-4">
+        <a class="link link-hover" href="/">Home</a>
+        <a class="link link-hover" href="/events">Events</a>
+        <a class="link link-hover" href="/rules">Rules</a>
+        <a class="link link-hover" href="/vote">Vote</a>
+        <a class="link link-hover" href="/rss">RSS</a>
+      </div>
+      <p class="grid grid-flow-col gap-1">
+        Source code of this website is available at
+        <a class="link" href="https://github.com/nyxkn/libre-music-challenge">Github</a>
+      </p>
     </footer>
-
-</body>
-
+  </body>
 </html>
