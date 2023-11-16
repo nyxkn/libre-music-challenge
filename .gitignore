@@ -180,7 +180,7 @@ pyrightconfig.json
 # project ignores
 secret/
 storage/
-tmp/
+temp/
 *.tmp
 /*.sh
 

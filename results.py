@@ -55,7 +55,14 @@ def rename_dict_key(dictionary, old_key, new_key):
 def generate_results(event_id):
     db = c.get_votes_db(event_id)
 
-    participating_usernames = c.get_event_participants(event_id)
+    # participating_usernames = c.get_event_participants(event_id)
+
+    # convert participating artists to usernames
+    participating_artists = c.get_event_participants(event_id)
+    participating_usernames = []
+    for artist in participating_artists:
+        participating_usernames.append(artist_to_username(artist))
+
 
     self_votes = {}
 
