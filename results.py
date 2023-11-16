@@ -12,8 +12,12 @@ import os
 
 users_table_cached = {}
 
+check_only = False
+
+
 def username_to_artist(username):
     return users_table_cached[username]
+
 
 def artist_to_username(artist):
     # swap key/value
@@ -25,21 +29,26 @@ def artist_to_username(artist):
 def main():
     # Check if at least one command-line argument is provided
     if len(sys.argv) < 2:
-        print("Please provide a command-line argument.")
+        print("Please provide the event id.")
         sys.exit(1)
 
-    # Read the first command-line argument
-    arg = int(sys.argv[1])
+    args = sys.argv[1:]
+    arg_event = int(args[0])
+
+    global check_only
+    if len(args) > 1:
+        if args[1] == "check":
+            check_only = True
 
     current_event = c.get_current_event()
-    if arg > current_event or arg < 18:
+    if arg_event > current_event or arg_event < 18:
         print("We don't have the data for this event.")
         sys.exit(1)
 
     global users_table_cached
     users_table_cached = c.get_users_table()
 
-    generate_results(arg)
+    generate_results(arg_event)
 
 
 
@@ -118,6 +127,9 @@ def generate_results(event_id):
         # answer = input("all votes are present. continue? (y/N)")
         # if answer != "y":
         #     exit()
+
+    if check_only:
+        exit()
 
 
     def my_sort(tuple):
