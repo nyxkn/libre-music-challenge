@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-white text-black">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -13,8 +13,10 @@
     <title>Libre Music Challenge</title>
   </head>
 
-  <body class="bg-white text-black">
-    {% block content %} {% endblock content %}
+  <body class="min-h-screen flex flex-col">
+    <header></header>
+
+    <main class="flex-grow">{% block content %} {% endblock content %}</main>
 
     <footer class="footer footer-center p-10 bg-gray-100 text-center text-sm">
       <div class="grid grid-flow-col gap-4">

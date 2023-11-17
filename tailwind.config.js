@@ -1,4 +1,7 @@
+// prettier-ignore
+
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: [
     './templates/**/*.html',
@@ -9,6 +12,6 @@ module.exports = {
   plugins: [
     require("daisyui"),
     require('@tailwindcss/typography'),
+    require("@tailwindcss/forms"),
   ],
 }
-
