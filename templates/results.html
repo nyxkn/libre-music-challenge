@@ -1,6 +1,6 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
 
-<script src="//unpkg.com/alpinejs"></script>
+{% block content %}
 
 <div class="mx-auto text-center my-16">
   <h1 class="text-4xl mb-8">Results</h1>
@@ -8,25 +8,48 @@
 
   <ul class="text-xl">
     {% for place,result in results.items() %}
+    
+      {% if admin %}
 
-    <li x-data="{ showContent: false }" class="my-8 flex items-center mx-auto max-w-xl gap-8">
-      <button class="btn" @click="showContent = !showContent">Show</button>
-      <div class="border border-black rounded-xl w-full p-6 flex gap-8">
-        <span>{{place}}.</span>
-        <div
-          id="content"
-          class="text-black transition-opacity duration-1000 flex items-center gap-8 text-center flex-grow"
-          x-bind:class="showContent ? 'opacity-100' : 'opacity-0'"
-        >
-          <span class="flex-grow font-bold">{{result.name}}</span>
-          <span class="">{{result.score}}</span>
-          <span class="font-bold">{{result.average}}</span>
-        </div>
-      </div>
-    </li>
+        <script src="//unpkg.com/alpinejs"></script>
 
+        <li x-data="{ showContent: false }" class="my-8 flex items-center mx-auto max-w-xl gap-8">
+          <button class="btn" @click="showContent = !showContent">Show</button>
+          <div class="border border-black rounded-xl w-full p-6 flex gap-8">
+            <span>{{place}}.</span>
+            <div
+              id="content"
+              class="transition-opacity duration-1000 flex items-center gap-8 text-center flex-grow"
+              x-bind:class="showContent ? 'opacity-100' : 'opacity-0'"
+            >
+              <span class="flex-grow font-bold">{{result.name}}</span>
+              <span class="">{{result.score}}</span>
+              <span class="">{{result.average}}</span>
+            </div>
+          </div>
+        </li>
+
+      {% else %}
+
+        <li class="my-4 flex items-center mx-auto max-w-xl gap-8">
+          <div class="border border-black rounded-xl w-full p-4 flex gap-8">
+            <span>{{place}}.</span>
+            <div id="content" class="flex items-center gap-8 text-center flex-grow">
+              <span class="flex-grow font-bold">{{result.name}}</span>
+              <span class="">{{result.score}}</span>
+              <span class="">{{result.average}}</span>
+            </div>
+          </div>
+        </li>
+
+      {% endif %}
+    
     {% endfor %}
   </ul>
+
+  <p class="mt-16">The complete scoresheet is available on 
+    <a class="link" href="https://github.com/nyxkn/libre-music-challenge/raw/main/data/results/lmc{{event_id}}-results.ods">github</a>
+  </p>
 </div>
 
 {% endblock content %}

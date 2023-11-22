@@ -5,7 +5,7 @@ import yaml
 
 users_db = "storage/users.json"
 votes_db = "storage/votes.json"
-current_event_statusfile = "storage/current_event"
+current_voting_event_statusfile = "storage/current_voting_event"
 
 events_datafile = "data/events.csv"
 rules_md = "data/rules.md"
@@ -26,15 +26,14 @@ def get_votes_db(event_id: int):
 # event = 0 in current_event file to disable voting and showing
 # locked = 1 to disable changing votes
 # eventually make it automatic depending on date
-
-def get_current_event():
+def get_current_voting_event():
     current_event = 0
 
     # with open("current_event", "r") as file:
     #     contents = file.read()
     #     current_event = int(contents.rstrip())
 
-    with open(current_event_statusfile, "r") as file:
+    with open(current_voting_event_statusfile, "r") as file:
         lines = [line.strip() for line in file.readlines()]
         current_event = int(lines[0])
 
@@ -43,7 +42,7 @@ def get_current_event():
 
 def is_voting_open():
     open_status = 0
-    with open(current_event_statusfile, "r") as file:
+    with open(current_voting_event_statusfile, "r") as file:
         lines = [line.strip() for line in file.readlines()]
         open_status = int(lines[1])
 

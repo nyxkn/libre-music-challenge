@@ -12,6 +12,7 @@ import feedgenerator
 import common as c
 import os
 import json
+from typing import List, Dict, Tuple, Optional, Union
 # import re
 
 app = Flask(__name__)
@@ -183,6 +184,34 @@ def unauthorized_handler():
 # UTILS
 # ================================================================================
 
+
+def user_is_authenticated():
+    return flask_login.current_user.is_authenticated
+
+
+def get_events():
+    events = []
+    with open(c.events_datafile, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            events.append(row)
+
+    return events
+
+
+def get_event(event_id: int) -> Dict:
+    for e in get_events():
+        if e['event'] == str(event_id):
+            return e
+    return {}
+
+
+def is_event_id_valid(event_id):
+    if get_event(event_id) != {}:
+        return True
+    return False
+
+
 def get_current_user():
     return flask_login.current_user.id
 
@@ -222,6 +251,9 @@ def read_text_file(file_path):
 
 @app.route("/get_entries/<int:event_id>", methods=["GET"])
 def get_entries(event_id: int):
+    if not is_event_id_valid(event_id):
+        return "Invalid event ID"
+
     item = internetarchive.get_item("libre-music-challenge-" + str(event_id))
 
     allowed_formats = [".flac", ".ogg"]
@@ -301,7 +333,7 @@ def save_votes():
             user_votes[artist] = vote
 
 
-    db = c.get_votes_db(c.get_current_event())
+    db = c.get_votes_db(c.get_current_voting_event())
 
     user = get_current_user()
     db.upsert({"user": user, "votes": user_votes}, Query().user == user)
@@ -313,6 +345,9 @@ def save_votes():
 @app.route("/get_my_votes/<int:event_id>", methods=["POST"])
 @flask_login.login_required
 def get_user_votes(event_id: int):
+    if not is_event_id_valid(event_id):
+        return "Invalid event ID"
+
     db = c.get_votes_db(event_id)
     db_data = db.search(Query().user == get_current_user())
 
@@ -339,11 +374,7 @@ def home():
 
 @app.route("/rss")
 def rss():
-    events = []
-    with open(c.events_datafile, 'r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            events.append(row)
+    events = get_events()
 
     # Create a feed object
     # or use Atom1Feed for an atom feed. both have the same api, also for add_item
@@ -385,10 +416,10 @@ def rules():
 
 @app.route("/vote")
 def vote():
-    if flask_login.current_user.is_authenticated:
+    if user_is_authenticated():
         return render_template(
             "vote.html",
-            event_id=c.get_current_event(),
+            event_id=c.get_current_voting_event(),
             locked=(not c.is_voting_open()),
             user=get_current_user()
         )
@@ -398,7 +429,7 @@ def vote():
 
 @app.route("/load_current_entries", methods=["GET"])
 def load_current_entries():
-    current_event = c.get_current_event()
+    current_event = c.get_current_voting_event()
 
     if current_event == 0:
         return {}
@@ -415,14 +446,9 @@ def load_current_entries():
 
 @app.route('/events', methods=["GET"])
 def events():
-    events = []
-    with open(c.events_datafile, 'r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            row['month_date'] = get_month_and_year(row['date'])
-            events.append(row)
-
+    events = get_events()
     for event in events:
+        event['month_date'] = get_month_and_year(event['date'])
         event['winner'] = event['winner'].replace("\n", ", ")
         # event['archive'] = event['archive'].replace("---", "")
 
@@ -432,16 +458,30 @@ def events():
 
 @app.route('/results/<int:event_id>', methods=["GET"])
 def results(event_id: int):
-    print(event_id)
+    event = get_event(event_id)
+    if event == {}:
+        return "Invalid event ID"
+
+    if event['winner'] == "?":
+        return "Results not yet announced"
+
     results = {}
     filename = f"{c.results_path}/lmc{event_id}-scoreboard.json"
     if not os.path.exists(filename):
-        return "Missing data for this event"
+        return "Missing results data for this event"
 
     with open(filename, 'r') as json_file:
         results = json.load(json_file)
 
-    return render_template("results.html", event_id=event_id, results=results)
+    admin_user = ""
+    with open("secret/admin_user", "r") as file:
+        admin_user = file.read().rstrip()
+
+    admin = False
+    if user_is_authenticated() and get_current_user() == admin_user:
+        admin = True
+
+    return render_template("results.html", event_id=event_id, results=results, admin=admin)
 
 
 if __name__ == "__main__":
