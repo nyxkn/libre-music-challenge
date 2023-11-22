@@ -97,14 +97,13 @@ def try_login(username, password):
         return False
 
 
+# def password_exists(username, password):
+#     db = TinyDB(c.users_db)
+#     query_data = db.search(Query().username == username)
 
-def password_exists(username, password):
-    db = TinyDB(c.users_db)
-    query_data = db.search(Query().username == username)
-
-    if len(query_data) == 1 and query_data[0]['password'] == '':
-        return True
-    return False
+#     if len(query_data) == 1 and query_data[0]['password'] == '':
+#         return True
+#     return False
 
 
 @login_manager.user_loader

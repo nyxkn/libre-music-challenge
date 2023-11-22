@@ -41,7 +41,7 @@ def main():
         if args[1] == "check":
             check_only = True
 
-    current_event = c.get_current_event()
+    current_event = c.get_current_voting_event()
     if arg_event > current_event or arg_event < 18:
         print("We don't have the data for this event.")
         sys.exit(1)

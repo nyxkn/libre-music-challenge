@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from tinydb import TinyDB, Query, table, operations
+from tinydb import TinyDB
 import yaml
 
 users_db = "storage/users.json"
