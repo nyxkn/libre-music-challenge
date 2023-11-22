@@ -18,7 +18,7 @@
                 {% if event.archive != "---" and event.archive != "?" %}
                     <a class="link ml-2" href="{{event.archive}}">Playlist</a>
                 {% endif %}
-                {% if event.winner != "?" %}
+                {% if event.event|int >= 18 and event.winner != "?" %}
                     <a class="link ml-2" href="results/{{event.event}}">Results</a>
                 {% endif %}
             </p>
