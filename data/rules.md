@@ -12,13 +12,13 @@
 
 - You must submit your entry before the end of the month.
 - When submitting an entry you agree that your song will be made available under the CC-BY-SA license.
-  You can publish your song under a different license if you like, but CC-BY-SA is the license that we will apply to your song once it's in the archive of the challenge.
+  Note: you can publish your song under a different license if you like, but CC-BY-SA is the license that we will apply to your song once it's in the archive of the challenge.
 - You must announce your submission in this forum thread, providing a link to your song.
-  You must also include a short description of how it was made. Specifically, list all of the software and plugins that you have used.
-- You can upload your track anywhere you like. However, you must provide access to the audio file to your song. This is so that we can store the tracks into our archive.
+  You must also include a short description of how it was made. At the very least, list all of the software, plugins, and instruments that you have used.
+- You can upload your track anywhere you like. However, you must at least provide access to an audio file of your song. This is so that we can store the tracks into our archive.
 - You must provide your audio file in a libre file format. Generally either FLAC or Ogg Vorbis.
-  The file name must follow the following convention: "Artist Name - Song Name". You can use any capitalization you like.
-  A WAV file is allowed, but it will be encoded as FLAC for the archive upload.
+  Note: a WAV file is allowed, but it will be encoded as FLAC for the archive upload.
+- The audio file name must follow the following convention: "Artist Name - Song Name". You can use any capitalization you like.
 - Publishing your project files is not mandatory but encouraged, in the spirit of learning and sharing knowledge with each other.
 - You can keep working on your submitted track until the challenge is over. Only the final version will be considered for voting.
 
