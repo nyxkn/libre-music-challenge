@@ -4,7 +4,7 @@
 
 <div class="mx-auto text-center my-16">
   <h1 class="text-4xl mb-8">Results</h1>
-  <h2 class="text-3xl mb-16">LMC #{{event_id}}</h2>
+  <h2 class="text-3xl mb-16">LMC #{{event.id}}</h2>
 
   <ul class="text-xl">
     {% for place,result in results.items() %}
@@ -48,7 +48,7 @@
   </ul>
 
   <p class="mt-16">The complete scoresheet is available on 
-    <a class="link" href="https://github.com/nyxkn/libre-music-challenge/raw/main/data/results/lmc{{event_id}}-results.ods">github</a>
+    <a class="link" href="https://github.com/nyxkn/libre-music-challenge/raw/main/data/results/lmc{{event.id}}-results.ods">github</a>
   </p>
 
   <p class="mt-8">Browse through all the other events

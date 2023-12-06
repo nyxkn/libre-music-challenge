@@ -200,7 +200,7 @@ def get_events():
 
 def get_event(event_id: int) -> Dict:
     for e in get_events():
-        if e['event'] == str(event_id):
+        if e['id'] == str(event_id):
             return e
     return {}
 
@@ -385,7 +385,7 @@ def vote():
     if user_is_authenticated():
         return render_template(
             "vote.html",
-            event_id=c.get_current_voting_event(),
+            event=get_event(c.get_current_voting_event()),
             locked=(not c.is_voting_open()),
             user=get_current_user()
         )
@@ -403,7 +403,7 @@ def load_current_entries():
         votes = get_user_votes(current_event)
         return render_template(
             "entries.html",
-            event_id=current_event,
+            event=get_event(current_event),
             entries=get_entries(current_event),
             votes=votes,
             locked=(not c.is_voting_open())
@@ -447,7 +447,7 @@ def results(event_id: int):
     if user_is_authenticated() and get_current_user() == admin_user:
         admin = True
 
-    return render_template("results.html", event_id=event_id, results=results, admin=admin)
+    return render_template("results.html", event=event, results=results, admin=admin)
 
 
 if __name__ == "__main__":
