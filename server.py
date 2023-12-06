@@ -253,7 +253,8 @@ def get_entries(event_id: int):
     if not is_event_id_valid(event_id):
         return "Invalid event ID"
 
-    item = internetarchive.get_item("libre-music-challenge-" + str(event_id))
+    event_data = get_event(event_id)
+    item = internetarchive.get_item(event_data["archive"])
 
     allowed_formats = [".flac", ".ogg"]
     entries = []
@@ -282,38 +283,6 @@ def ping():
 # API - PRIVATE
 # ================================================================================
 
-
-# needs reviewing. but likely not needed
-# @app.route("/save_vote", methods=["POST"])
-# @flask_login.login_required
-# def save_vote():
-#     if is_voting_locked():
-#         return {}
-
-#     artist = ""
-#     vote = ""
-#     # there's actually only one entry
-#     for k,v in request.form.items():
-#         if k.startswith("vote"):
-#             artist = k.replace("vote_", "")
-#             vote = v
-#             break
-
-#     db = get_db(get_current_event())
-
-#     user = get_current_user()
-
-#     def set_vote(artist, new_vote):
-#         def transform(doc):
-#             doc['votes'][artist] = new_vote
-#         return transform
-
-#     db.update(set_vote(artist, vote), Query().user == user)
-
-#     return {"status": "ok"}
-
-
-
 @app.route("/save_votes", methods=["POST"])
 @flask_login.login_required
 def save_votes():
@@ -340,7 +309,6 @@ def save_votes():
     return {}
 
 
-
 @app.route("/get_my_votes/<int:event_id>", methods=["POST"])
 @flask_login.login_required
 def get_user_votes(event_id: int):
@@ -364,7 +332,6 @@ def get_user_votes(event_id: int):
 # ================================================================================
 # WEBSITE
 # ================================================================================
-
 
 @app.route("/")
 def home():
