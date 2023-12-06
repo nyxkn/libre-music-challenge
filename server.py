@@ -356,10 +356,10 @@ def rss():
         date_obj = datetime.strptime(event["date"], '%d/%m/%y')
         month_year = date_obj.strftime('%B %Y')
         feed.add_item(
-            title=f'"{event["title"]}" - LMC #{event["event"]} ({month_year})',
+            title=f'"{event["title"]}" - LMC #{event["id"]} ({month_year})',
             link=event["link"],
             description=f'The theme for the month of {month_year} is: {event["title"]}\n{event["link"]}',
-            unique_id=event["event"],
+            unique_id=event["id"],
             pubdate=to_date_object(event["date"]),
         )
 
