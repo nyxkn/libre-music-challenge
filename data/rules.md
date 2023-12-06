@@ -7,6 +7,7 @@
 - Collaborations are allowed.
 - We might request project files to ensure that the song complies with the rules. Failure to provide this will result in disqualification.
 - Regardless of any challenge-specific restriction on plugins, basic utility plugins are always allowed, unless specified otherwise. These include things like Limiters, EQ and Filtering, Volume and Pan, and MIDI manipulation.
+- Regardless of any software restriction, you are also allowed to use any hardware device to enhance your workflow, e.g. midi keyboards or other controllers.
 
 ## Submission
 
