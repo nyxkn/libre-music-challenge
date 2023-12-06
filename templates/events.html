@@ -12,13 +12,13 @@
         <li class="my-16">
             <h4 class="text-lg font-bold my-4">LMC #{{event.event}} - {{event.month_date}}</h4>
             <h4 class="text-lg italic my-4">{{event.title}}</h4>
-            <p>Winner: <span class="font-bold italic">{{event.winner}}</span></p>
+            <p>Winner: <span class="font-bold italic">{{event.winner if event.winner else "?"}}</span></p>
             <p>
                 <a class="link" href="{{event.link}}">Thread</a>
-                {% if event.archive != "---" and event.archive != "?" %}
+                {% if event.archive and event.archive != "---" %}
                     <a class="link ml-2" href="{{event.archive}}">Playlist</a>
                 {% endif %}
-                {% if event.event|int >= 18 and event.winner != "?" %}
+                {% if event.event|int >= 18 and event.winner %}
                     <a class="link ml-2" href="results/{{event.event}}">Results</a>
                 {% endif %}
             </p>
