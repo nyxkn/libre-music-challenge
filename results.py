@@ -174,7 +174,7 @@ def generate_results(event_id):
 
     for user,votes in votes_given.items():
         generosity_stats[user] = {}
-        generosity_stats[user]['given'] = sum(votes) / len(votes)
+        generosity_stats[user]['given'] = round(sum(votes) / len(votes), 1)
 
     generosity_sum = 0
     for k,v in generosity_stats.items():
