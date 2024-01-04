@@ -33,7 +33,10 @@ for file in *.flac *.ogg; do
 		# vorbiscomment -l "$file"
 		# Export existing tags to a file
 		vorbiscomment -e -l "$file" > "$tmpfile"
-		# vorbiscomment -w -t "ARTIST=$artist_name" -t "TITLE=$track_name" "$file"
+		if ! grep -q "^ARTIST=" "$tmpfile"; then
+			# vorbiscomment -w -t "ARTIST=$artist_name" -t "TITLE=$track_name" "$tmpfile"
+			printf "ARTIST=\nTITLE=\n" > "$tmpfile"
+		fi
 		# Modify the artist and title tags
 		sed -i "/^ARTIST=/c\ARTIST=$artist_name" "$tmpfile"
 		sed -i "/^TITLE=/c\TITLE=$track_name" "$tmpfile"
