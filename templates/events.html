@@ -9,7 +9,7 @@
 
         {% for event in events %}
 
-        <li class="my-16">
+        <li class="my-16" id={{event.id}}>
             <h4 class="text-lg font-bold my-4">LMC #{{event.id}} - {{event.month_date}}</h4>
             <h4 class="text-lg italic my-4">{{event.title}}</h4>
             <p>Winner: <span class="font-bold italic">{{event.winner if event.winner else "?"}}</span></p>

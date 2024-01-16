@@ -121,10 +121,10 @@ def generate_results(event_id):
             missing_votes = True
 
     if missing_votes:
-        print("=== votes are still missing. exiting. ===")
+        print("=== votes are still missing. exiting ===")
         exit()
     else:
-        print("=== all votes are present! continuing. ===")
+        print("=== all votes are present! ===")
         # answer = input("all votes are present. continue? (y/N)")
         # if answer != "y":
         #     exit()
