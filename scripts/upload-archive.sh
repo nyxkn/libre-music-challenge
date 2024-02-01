@@ -9,20 +9,27 @@ description="Submissions for the Libre Music Challenge #$id: \"$title\", $date.
 More info about the challenge at: https://linuxmusicians.com/viewtopic.php?t=$lm_link
 "
 
-echo "$id"
-echo "$title"
-echo "$date"
-echo "$lm_link"
-echo "$description"
+echo "id: $id"
+echo "title: $title"
+echo "date: $date"
+echo "lm_link: $lm_link"
+echo "desc: $description"
 
 read -p "Continue? (y/N): " r
 r=${r:-n}
 [[ $r != "y" ]] && exit
 
-ia upload "libre-music-challenge-$id" ./*.flac ./*.ogg \
+# setup the item with flac files
+ia upload "libre-music-challenge-$id" ./*.flac \
 	--metadata="title:Libre Music Challenge #$id" \
 	--metadata="mediatype:audio" \
 	--metadata="collection:opensource_audio" \
 	--metadata="subject:libre music challenge" \
 	--metadata="licenseurl:https://creativecommons.org/licenses/by-sa/4.0/" \
 	--metadata="description:$description"
+
+# add ogg if any
+ia upload "libre-music-challenge-$id" ./*.ogg
+
+# add source
+ia upload "libre-music-challenge-$id" ./source
