@@ -131,7 +131,8 @@ def generate_results(event_id):
 
     if check_only:
         exit()
-
+    else:
+        print("=== generating results... ===")
 
     def my_sort(tuple):
         user = tuple[0]
@@ -174,7 +175,11 @@ def generate_results(event_id):
 
     for user,votes in votes_given.items():
         generosity_stats[user] = {}
-        generosity_stats[user]['given'] = round(sum(votes) / len(votes), 1)
+        len_votes = len(votes)
+        if user in participating_usernames:
+            # one of the votes is own-vote so 0, so we skip that
+            len_votes -= 1
+        generosity_stats[user]['given'] = round(sum(votes) / len_votes, 1)
 
     generosity_sum = 0
     for k,v in generosity_stats.items():
