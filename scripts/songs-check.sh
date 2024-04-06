@@ -1,7 +1,7 @@
 #!/bin/bash
 
 path="$1"
-[[ -z "$path" ]] && exit
+[[ -z "$path" ]] && echo "need path" && exit
 
 echo "renaming files in $path"
 
@@ -23,7 +23,22 @@ for file in *; do
 			mv "$file" "$new_name"
 			echo "Renamed: $file -> $new_name"
 		fi
+
 	fi
 done
 
-echo "Rename process complete."
+echo
+echo "artists:"
+
+for file in *; do
+    if [[ $file == *' - '* ]]; then
+        # Extract the artist name by cutting the string before ' - '
+        artist=${file%% - *}
+
+        # Print the artist name
+        echo "- $artist"
+    fi
+done
+
+echo
+echo "rename process complete."

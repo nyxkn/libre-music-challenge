@@ -15,9 +15,11 @@ echo "date: $date"
 echo "lm_link: $lm_link"
 echo "desc: $description"
 
-read -p "Continue? (y/N): " r
-r=${r:-n}
-[[ $r != "y" ]] && exit
+read -p "continue? (y/N) " -n1 prompt_answer && echo ""
+[[ "$prompt_answer" != "y" ]] && exit
+
+echo
+echo "uploading .flac files"
 
 # setup the item with flac files
 ia upload "libre-music-challenge-$id" ./*.flac \
@@ -28,8 +30,12 @@ ia upload "libre-music-challenge-$id" ./*.flac \
 	--metadata="licenseurl:https://creativecommons.org/licenses/by-sa/4.0/" \
 	--metadata="description:$description"
 
+echo
+echo "uploading .ogg files"
 # add ogg if any
 ia upload "libre-music-challenge-$id" ./*.ogg
 
 # add source
-ia upload "libre-music-challenge-$id" ./source
+# echo
+# echo "uploading source files"
+# ia upload "libre-music-challenge-$id" ./source
