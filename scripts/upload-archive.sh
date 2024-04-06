@@ -39,3 +39,9 @@ ia upload "libre-music-challenge-$id" ./*.ogg
 # echo
 # echo "uploading source files"
 # ia upload "libre-music-challenge-$id" ./source
+
+echo
+echo "waiting to check tasks..."
+sleep 1m
+
+check-tasks.sh
