@@ -12,6 +12,7 @@ import feedgenerator
 import common as c
 import os
 import json
+import re
 from typing import List, Dict, Tuple, Optional, Union
 # import re
 
@@ -36,6 +37,13 @@ def main():
 
 class User(flask_login.UserMixin):
     pass
+
+
+def is_valid_username_input(text):
+    pattern = r'^[a-zA-Z0-9\-_ ]+$'
+    if re.match(pattern, text):
+        return True
+    return False
 
 
 def user_exists(username):
@@ -141,8 +149,8 @@ def login():
         if not username or not password:
             return 'Input a username and a password'
 
-        if not username.isalnum():
-            return "Username should be only letters and numbers"
+        if not is_valid_username_input(username):
+            return "Username can contain letters, numbers, hyphen, underscore"
 
         username = username.lower()
 
