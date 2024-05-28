@@ -1,0 +1,112 @@
+{
+    "1": {
+        "name": "MyLoFy",
+        "score": 45,
+        "average": 4.5,
+        "5s": 6,
+        "4s": 3,
+        "3s": 1,
+        "2s": 0,
+        "1s": 0
+    },
+    "2": {
+        "name": "nyx eles",
+        "score": 44,
+        "average": 4.4,
+        "5s": 6,
+        "4s": 3,
+        "3s": 0,
+        "2s": 1,
+        "1s": 0
+    },
+    "3": {
+        "name": "A-Lin",
+        "score": 43,
+        "average": 4.3,
+        "5s": 6,
+        "4s": 1,
+        "3s": 3,
+        "2s": 0,
+        "1s": 0
+    },
+    "4": {
+        "name": "Spotlight Kyd",
+        "score": 39,
+        "average": 3.9,
+        "5s": 1,
+        "4s": 7,
+        "3s": 2,
+        "2s": 0,
+        "1s": 0
+    },
+    "5": {
+        "name": "Peace From The Ruins",
+        "score": 38,
+        "average": 3.8,
+        "5s": 3,
+        "4s": 3,
+        "3s": 3,
+        "2s": 1,
+        "1s": 0
+    },
+    "6": {
+        "name": "Min Jun Gi",
+        "score": 38,
+        "average": 3.8,
+        "5s": 1,
+        "4s": 7,
+        "3s": 1,
+        "2s": 1,
+        "1s": 0
+    },
+    "7": {
+        "name": "sg75",
+        "score": 37,
+        "average": 3.7,
+        "5s": 2,
+        "4s": 4,
+        "3s": 3,
+        "2s": 1,
+        "1s": 0
+    },
+    "8": {
+        "name": "Amberdrake",
+        "score": 32,
+        "average": 3.2,
+        "5s": 0,
+        "4s": 6,
+        "3s": 2,
+        "2s": 0,
+        "1s": 2
+    },
+    "9": {
+        "name": "Avelho",
+        "score": 28,
+        "average": 2.8,
+        "5s": 0,
+        "4s": 2,
+        "3s": 4,
+        "2s": 4,
+        "1s": 0
+    },
+    "10": {
+        "name": "Trumpetrespas",
+        "score": 27,
+        "average": 2.7,
+        "5s": 0,
+        "4s": 0,
+        "3s": 7,
+        "2s": 3,
+        "1s": 0
+    },
+    "11": {
+        "name": "squidKid-deluxe",
+        "score": 26,
+        "average": 2.6,
+        "5s": 0,
+        "4s": 0,
+        "3s": 6,
+        "2s": 4,
+        "1s": 0
+    }
+}
