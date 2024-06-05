@@ -207,10 +207,24 @@ def get_events():
 
 
 def get_event(event_id: int) -> Dict:
+    # TODO: cache get_events()?
     for e in get_events():
         if e['id'] == str(event_id):
             return e
     return {}
+
+
+def get_scoreboard(event_id: int) -> Dict:
+    scoreboard = {}
+    filename = f"{c.results_path}/lmc{event_id}-scoreboard.json"
+    if not os.path.exists(filename):
+        # print("Missing results data for this event")
+        return {}
+
+    with open(filename, 'r') as json_file:
+        scoreboard = json.load(json_file)
+
+    return scoreboard
 
 
 def is_event_id_valid(event_id):
@@ -346,6 +360,8 @@ def home():
     return render_template("index.html")
 
 
+
+
 @app.route("/rss")
 def rss():
     events = get_events()
@@ -418,13 +434,30 @@ def load_current_entries():
         )
 
 
+def fetch_winner_entry_track(event_id) -> str:
+    if event_id >= 18:
+        event = get_event(event_id)
+        entries = get_entries(event_id)
+        print(event['winner'])
+        for entry in entries:
+            if entry['artist'] == event['winner']:
+                winner_entry = entry
+                winner_track_url = event['archive'] + "/" + winner_entry['filename']
+                return winner_track_url
+    return None
+
+
 @app.route('/events', methods=["GET"])
 def events():
     events = get_events()
     for event in events:
         event['month_date'] = get_month_and_year(event['date'])
         event['winner'] = event['winner'].replace("\n", ", ")
+        event['scoreboard'] = get_scoreboard(event['id'])
         # event['archive'] = event['archive'].replace("---", "")
+
+        event['winner_entry'] = None
+
 
     events.reverse()
     return render_template("events.html", events=events)
@@ -439,13 +472,7 @@ def results(event_id: int):
     if event['winner'] == "?":
         return "Results not yet announced"
 
-    results = {}
-    filename = f"{c.results_path}/lmc{event_id}-scoreboard.json"
-    if not os.path.exists(filename):
-        return "Missing results data for this event"
-
-    with open(filename, 'r') as json_file:
-        results = json.load(json_file)
+    results = get_scoreboard(event_id)
 
     admin_user = ""
     with open("secret/admin_user", "r") as file:

@@ -13,6 +13,13 @@
             <h4 class="text-lg font-bold my-4">LMC #{{event.id}} - {{event.month_date}}</h4>
             <h4 class="text-lg italic my-4">{{event.title}}</h4>
             <p>Winner: <span class="font-bold italic">{{event.winner if event.winner else "?"}}</span></p>
+            {% if event.id|int >= 18 and event.winner_entry %}
+            <div class="flex justify-center">
+                <iframe src="https://archive.org/embed/{{event.archive}}/{{event.winner_entry.filename}}" width="500" height="30"
+                    frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen>
+                </iframe>
+            </div>
+            {% endif %}
             <p>
                 <a class="link" href="{{event.link}}">Thread</a>
                 {% if event.archive and event.archive != "---" %}
