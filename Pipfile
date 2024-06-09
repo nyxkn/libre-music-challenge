@@ -4,21 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-# you can update to flask 3 when flask-login releases a new version (>0.6.2)
-# for now, pinning flask and werkzeug to <3
-flask = "<3.0"
-werkzeug = "<3.0"
-internetarchive = "*"
-tinydb = "*"
-flask-login = "*"
-flask-assets = "*"
-gunicorn = "*"
-markdown = "*"
-feedgenerator = "*"
-pandas = "*"
-odswriter = "*"
-odfpy = "*"
-pyyaml = "*"
+pandas = ">=2.2.2,<3.0.0"
+flask = ">=3.0.3"
+werkzeug = ">=3.0.3"
+internetarchive = ">=4.1.0"
+tinydb = ">=4.8.0"
+flask-login = ">=0.6.3"
+gunicorn = ">=22.0.0"
+markdown = ">=3.6"
+feedgenerator = ">=2.1.0"
+odswriter = ">=0.4.0"
+odfpy = ">=1.4.1"
+pyyaml = ">=6.0.1"
 
 [dev-packages]
 
