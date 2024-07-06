@@ -1,0 +1,42 @@
+{
+    "1": {
+        "name": "Avelho",
+        "score": 13,
+        "average": 4.3,
+        "5s": 2,
+        "4s": 0,
+        "3s": 1,
+        "2s": 0,
+        "1s": 0
+    },
+    "2": {
+        "name": "nyx eles",
+        "score": 13,
+        "average": 4.3,
+        "5s": 1,
+        "4s": 2,
+        "3s": 0,
+        "2s": 0,
+        "1s": 0
+    },
+    "3": {
+        "name": "LogosCoder",
+        "score": 10,
+        "average": 3.3,
+        "5s": 0,
+        "4s": 1,
+        "3s": 2,
+        "2s": 0,
+        "1s": 0
+    },
+    "4": {
+        "name": "Trumpetrespas",
+        "score": 9,
+        "average": 3,
+        "5s": 0,
+        "4s": 0,
+        "3s": 3,
+        "2s": 0,
+        "1s": 0
+    }
+}
