@@ -92,47 +92,58 @@ def generate_results(event_id):
     for user_entry in user_entries:
         from_user = user_entry["user"]
 
-        if from_user in participating_usernames:
-            # user who has given the votes
-
-            # if we have a self vote, store it
-            if from_user in user_entry["votes"]:
-                self_votes[from_user] = int(user_entry["votes"][from_user])
-            else:
-                self_votes[from_user] = numpy.nan
-            user_entry["votes"][from_user] = '0'
-
         # sort votes by to_artist
         votes_from_user = dict(sorted(user_entry["votes"].items()))
+
         for to_user,vote in votes_from_user.items():
             votes_received[to_user].append(int(vote))
             votes_given[from_user].append(int(vote))
 
 
-    missing_votes = False
+    # missing_votes = False
+    missing_votes_by_users = []
     for user in participating_usernames:
         if not user in votes_given or len(votes_given[user]) < len(participating_usernames):
             print(f"user {user} has not completed the voting")
-            missing_votes = True
+            # missing_votes = True
+            missing_votes_by_users.append(user)
 
     for user,votes in votes_given.items():
         if not user in participating_usernames and len(votes) < len(participating_artists):
             print(f"non-participant {user} has started but not completed the voting")
-            missing_votes = True
+            # missing_votes = True
 
-    if missing_votes:
-        print("=== votes are still missing. exiting ===")
-        exit()
+    if missing_votes_by_users:
+        print(f"=== votes are still missing by users: {missing_votes_by_users} ===")
+        answer = input("continue anyway? (missing users will be disqualified) (y/N)")
+        if answer != "y":
+            exit()
+        print("=== continuing ===")
     else:
-        print("=== all votes are present! ===")
-        # answer = input("all votes are present. continue? (y/N)")
-        # if answer != "y":
-        #     exit()
+        print("=== all votes are present! continuing ===")
 
     if check_only:
         exit()
     else:
         print("=== generating results... ===")
+
+    for missing_user in missing_votes_by_users:
+        votes_given[missing_user] = [-1] * len(participating_usernames)
+        self_votes[missing_user] = -1
+
+    for user_entry in user_entries:
+        from_user = user_entry["user"]
+
+        if from_user in participating_usernames:
+            # if we have a self vote, store it
+            if from_user in user_entry["votes"]:
+                self_votes[from_user] = int(user_entry["votes"][from_user])
+            else:
+                self_votes[from_user] = numpy.nan
+            # change the vote to 0 for further calculations
+            # self votes are now stored independently in self_votes
+            user_entry["votes"][from_user] = '0'
+
 
     def my_sort(tuple):
         user = tuple[0]
@@ -144,7 +155,6 @@ def generate_results(event_id):
     votes_given = dict(sorted(votes_given.items(), key=my_sort))
     self_votes = dict(sorted(self_votes.items()))
 
-    # votes matrixes. currently not being used
     votes_matrix_given = list(votes_given.values())
     votes_matrix_received = numpy.transpose(votes_matrix_given)
 
@@ -157,7 +167,7 @@ def generate_results(event_id):
 
     for votes in votes_matrix_given:
         for vote in votes:
-            if vote == 0:
+            if vote <= 0:
                 continue
             votes_distribution[vote]['count'] += 1
 
@@ -191,13 +201,13 @@ def generate_results(event_id):
         stats['generosity'] = round((stats['given'] - avg_generosity) / avg_generosity * 100, 1)
 
     # ========================================
-    # gather participant votes statistics
+    # gather participant votes and calculate averages
 
     participant_stats = {}
 
     for user,votes in votes_received.items():
         votes_sum = sum(votes)
-        avg = statistics.mean(filter(lambda x: x != 0, votes))
+        avg = statistics.mean(filter(lambda x: x > 0, votes))
         avg = round(avg, 1)
         participant_stats[user] = {
             'score': votes_sum,
@@ -207,6 +217,10 @@ def generate_results(event_id):
             participant_stats[user][str(v) + "s"] = len(list(filter(lambda n: n == v, votes)))
 
     def score_sort(item):
+        if user in missing_votes_by_users:
+            # if disqualified return large value to ensure it's ordered last
+            return (float('inf'),)
+
         return (item[1]["score"],
                 item[1]["5s"],
                 item[1]["4s"],
@@ -219,14 +233,22 @@ def generate_results(event_id):
     # generate scoreboard
 
     scoreboard = {}
+    user_stats = []
     counter = 1
     for user,stats in participant_stats_ordered.items():
         entry = {}
         entry["name"] = username_to_artist(user)
+        if user in missing_votes_by_users:
+            entry["placement"] = "DQ"
+        else:
+            entry["placement"] = counter
+            counter += 1
         # this appends stats dict to our entry dict
         entry.update(stats.copy())
-        scoreboard[counter] = entry
-        counter += 1
+        user_stats.append(entry)
+
+    for entry in user_stats:
+        scoreboard[entry["placement"]] = entry
 
 
     # ========================================
@@ -237,6 +259,12 @@ def generate_results(event_id):
 
     # Write the dictionary to a file
     with open(json_filename, 'w') as json_file:
+        # scoreboard_copy = copy.deepcopy(scoreboard)
+        # for rank in list(scoreboard.keys()):
+        #     if artist_to_username(scoreboard[rank]["name"]) in missing_votes_by_users:
+        #         print(f"delete {scoreboard[rank]}")
+        #         del scoreboard[rank]
+            
         json.dump(scoreboard, json_file, indent=4)
 
     # ========================================
@@ -249,6 +277,7 @@ def generate_results(event_id):
     votes_given_chart_df = pd.DataFrame.from_dict(votes_given, orient='index')
     votes_given_chart_df.columns = sorted(participating_usernames)
     votes_given_chart_df = votes_given_chart_df.replace(0, numpy.nan)
+    votes_given_chart_df = votes_given_chart_df.replace(-1, numpy.nan)
 
     votes_given_chart_df.loc['total score',:] = votes_given_chart_df.sum(axis=0, skipna=True)
     # the iloc slice [:-1] selects all rows except last
@@ -284,8 +313,9 @@ def generate_results(event_id):
     filename = f"{c.results_path}/lmc{event_id}-results.ods"
 
     if os.path.exists(filename):
-        print(f"{filename} already exists! aborting")
-        exit()
+        answer = input(f"{filename} already exists! overwrite? (y/N)")
+        if answer != "y":
+            exit()
 
     # excelwriter has an issue with python linters. ignore this error
     # the pylint comment doesn't seem to work. are we even using pylint?
