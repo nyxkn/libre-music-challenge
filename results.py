@@ -100,18 +100,15 @@ def generate_results(event_id):
             votes_given[from_user].append(int(vote))
 
 
-    # missing_votes = False
     missing_votes_by_users = []
     for user in participating_usernames:
         if not user in votes_given or len(votes_given[user]) < len(participating_usernames):
             print(f"user {user} has not completed the voting")
-            # missing_votes = True
             missing_votes_by_users.append(user)
 
     for user,votes in votes_given.items():
         if not user in participating_usernames and len(votes) < len(participating_artists):
             print(f"non-participant {user} has started but not completed the voting")
-            # missing_votes = True
 
     if missing_votes_by_users:
         print(f"=== votes are still missing by users: {missing_votes_by_users} ===")
@@ -259,12 +256,6 @@ def generate_results(event_id):
 
     # Write the dictionary to a file
     with open(json_filename, 'w') as json_file:
-        # scoreboard_copy = copy.deepcopy(scoreboard)
-        # for rank in list(scoreboard.keys()):
-        #     if artist_to_username(scoreboard[rank]["name"]) in missing_votes_by_users:
-        #         print(f"delete {scoreboard[rank]}")
-        #         del scoreboard[rank]
-            
         json.dump(scoreboard, json_file, indent=4)
 
     # ========================================
