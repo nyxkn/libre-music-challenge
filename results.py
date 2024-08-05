@@ -245,15 +245,15 @@ def generate_results(event_id):
             entry["placement"] = counter
             counter += 1
         # this appends stats dict to our entry dict
-        entry.update(stats.copy())
+        if not user in disqualified_users:
+            # if disqualified all stats will be empty
+            entry.update(stats.copy())
         user_stats.append(entry)
 
     for entry in user_stats:
         scoreboard[entry["placement"]] = entry
         # we have to delete it before writing the dict to ods
         del entry["placement"]
-
-
 
     # ========================================
     # generate ods file
