@@ -124,7 +124,9 @@ def generate_results(event_id):
     else:
         print("=== generating results... ===")
 
-    for missing_user in missing_votes_by_users:
+    disqualified_users = missing_votes_by_users
+
+    for missing_user in disqualified_users:
         votes_given[missing_user] = [-1] * len(participating_usernames)
         self_votes[missing_user] = -1
 
@@ -181,6 +183,8 @@ def generate_results(event_id):
     generosity_stats = {}
 
     for user,votes in votes_given.items():
+        if user in disqualified_users:
+            continue
         generosity_stats[user] = {}
         len_votes = len(votes)
         if user in participating_usernames:
@@ -214,7 +218,7 @@ def generate_results(event_id):
             participant_stats[user][str(v) + "s"] = len(list(filter(lambda n: n == v, votes)))
 
     def score_sort(item):
-        if user in missing_votes_by_users:
+        if user in disqualified_users:
             # if disqualified return large value to ensure it's ordered last
             return (float('inf'),)
 
@@ -235,7 +239,7 @@ def generate_results(event_id):
     for user,stats in participant_stats_ordered.items():
         entry = {}
         entry["name"] = username_to_artist(user)
-        if user in missing_votes_by_users:
+        if user in disqualified_users:
             entry["placement"] = "DQ"
         else:
             entry["placement"] = counter
@@ -246,17 +250,10 @@ def generate_results(event_id):
 
     for entry in user_stats:
         scoreboard[entry["placement"]] = entry
+        # we have to delete it before writing the dict to ods
+        del entry["placement"]
 
 
-    # ========================================
-    # generate json file
-    # Specify the file name
-
-    json_filename = f"{c.results_path}/lmc{event_id}-scoreboard.json"
-
-    # Write the dictionary to a file
-    with open(json_filename, 'w') as json_file:
-        json.dump(scoreboard, json_file, indent=4)
 
     # ========================================
     # generate ods file
@@ -316,6 +313,16 @@ def generate_results(event_id):
         generosity_df.to_excel(writer, sheet_name="generosity")
         votes_distribution_df.to_excel(writer, sheet_name="distribution")
         notes_df.to_excel(writer, sheet_name="notes", header=False, index=False)
+
+
+    # ========================================
+    # generate json file
+
+    json_filename = f"{c.results_path}/lmc{event_id}-scoreboard.json"
+
+    # Write the dictionary to a file
+    with open(json_filename, 'w') as json_file:
+        json.dump(scoreboard, json_file, indent=4)
 
 
 if __name__ == "__main__":
