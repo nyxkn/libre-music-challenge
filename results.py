@@ -102,7 +102,7 @@ def generate_results(event_id):
 
     missing_votes_by_users = []
     for user in participating_usernames:
-        if not user in votes_given or len(votes_given[user]) < len(participating_usernames):
+        if not user in votes_given or len(votes_given[user]) < len(participating_usernames) - 1:
             print(f"user {user} has not completed the voting")
             missing_votes_by_users.append(user)
 
@@ -155,7 +155,7 @@ def generate_results(event_id):
     self_votes = dict(sorted(self_votes.items()))
 
     votes_matrix_given = list(votes_given.values())
-    votes_matrix_received = numpy.transpose(votes_matrix_given)
+    # votes_matrix_received = numpy.transpose(votes_matrix_given)
 
     # ========================================
     # calculate votes distribution
@@ -218,9 +218,9 @@ def generate_results(event_id):
             participant_stats[user][str(v) + "s"] = len(list(filter(lambda n: n == v, votes)))
 
     def score_sort(item):
-        if user in disqualified_users:
+        if item[0] in disqualified_users:
             # if disqualified return large value to ensure it's ordered last
-            return (float('inf'),)
+            return (-1,)
 
         return (item[1]["score"],
                 item[1]["5s"],
