@@ -89,15 +89,31 @@ def generate_results(event_id):
             rename_dict_key(user_entries[i]["votes"], to_artist, to_user)
 
 
+    # generate votes_given and votes_received
+    # self votes get zeroed for further calculations
     for user_entry in user_entries:
         from_user = user_entry["user"]
+
+        if from_user in participating_usernames:
+            if from_user in user_entry["votes"]:
+                # if we have a self vote, store it as is
+                self_votes[from_user] = int(user_entry["votes"][from_user])
+            else:
+                # if there isn't, make it zero
+                user_entry["votes"][from_user] = '0'
+                self_votes[from_user] = numpy.nan
 
         # sort votes by to_artist
         votes_from_user = dict(sorted(user_entry["votes"].items()))
 
         for to_user,vote in votes_from_user.items():
-            votes_received[to_user].append(int(vote))
-            votes_given[from_user].append(int(vote))
+            if to_user == from_user:
+                votes_given[from_user].append(0)
+                votes_received[to_user].append(0)
+            else:
+                votes_given[from_user].append(int(vote))
+                votes_received[to_user].append(int(vote))
+
 
 
     missing_votes_by_users = []
@@ -130,25 +146,13 @@ def generate_results(event_id):
         votes_given[missing_user] = [-1] * len(participating_usernames)
         self_votes[missing_user] = -1
 
-    for user_entry in user_entries:
-        from_user = user_entry["user"]
-
-        if from_user in participating_usernames:
-            # if we have a self vote, store it
-            if from_user in user_entry["votes"]:
-                self_votes[from_user] = int(user_entry["votes"][from_user])
-            else:
-                self_votes[from_user] = numpy.nan
-            # change the vote to 0 for further calculations
-            # self votes are now stored independently in self_votes
-            user_entry["votes"][from_user] = '0'
-
 
     def my_sort(tuple):
         user = tuple[0]
         # sort participating users first, non-participating last
         # then by name
         return (not user in participating_usernames, user)
+
 
     # sort by from_user
     votes_given = dict(sorted(votes_given.items(), key=my_sort))
