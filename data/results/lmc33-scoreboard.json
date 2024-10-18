@@ -1,30 +1,30 @@
 {
     "1": {
-        "name": "Spotlight Kyd",
-        "score": 22,
-        "average": 4.4,
-        "5s": 3,
+        "name": "A-Lin",
+        "score": 17,
+        "average": 4.2,
+        "5s": 2,
         "4s": 1,
         "3s": 1,
         "2s": 0,
         "1s": 0
     },
     "2": {
-        "name": "A-Lin",
-        "score": 21,
+        "name": "sg75",
+        "score": 17,
         "average": 4.2,
         "5s": 2,
-        "4s": 2,
+        "4s": 1,
         "3s": 1,
         "2s": 0,
         "1s": 0
     },
     "3": {
-        "name": "sg75",
-        "score": 21,
+        "name": "Spotlight Kyd",
+        "score": 17,
         "average": 4.2,
         "5s": 2,
-        "4s": 2,
+        "4s": 1,
         "3s": 1,
         "2s": 0,
         "1s": 0
@@ -41,12 +41,12 @@
     },
     "5": {
         "name": "athornvoices",
-        "score": 12,
-        "average": 2.4,
+        "score": 10,
+        "average": 2.5,
         "5s": 0,
         "4s": 1,
         "3s": 1,
-        "2s": 2,
+        "2s": 1,
         "1s": 1
     }
 }
